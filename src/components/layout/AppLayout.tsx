@@ -32,8 +32,12 @@ function NotificationButton() {
       return;
     }
 
-    // Check if running in an iframe (like AI Studio preview environment)
-    const isInIframe = window.self !== window.top;
+    let isInIframe = false;
+    try {
+      isInIframe = window.self !== window.top;
+    } catch (e) {
+      isInIframe = true;
+    }
     
     if (permission === 'granted') {
       try {

@@ -21,17 +21,21 @@ export function AdSenseBlock({
 }: AdSenseBlockProps) {
   const isLoaded = useRef(false);
 
+  const [isInIframe, setIsInIframe] = React.useState(false);
+
   useEffect(() => {
-    if (!isLoaded.current) {
+    let inIframe = false;
+    try {
+      inIframe = window.self !== window.top;
+    } catch (e) {
+      inIframe = true;
+    }
+    setIsInIframe(inIframe);
+
+    if (!isLoaded.current && !inIframe) {
       isLoaded.current = true;
       try {
         if (typeof window !== 'undefined') {
-          // Check if we are in an iframe (AI Studio preview)
-          const isInIframe = window.self !== window.top;
-          if (isInIframe) {
-            console.log('AdSense blocked in preview iframe');
-            return;
-          }
           (window.adsbygoogle = window.adsbygoogle || []).push({});
         }
       } catch (e) {
@@ -39,8 +43,6 @@ export function AdSenseBlock({
       }
     }
   }, []);
-
-  const isInIframe = typeof window !== 'undefined' && window.self !== window.top;
 
   if (isInIframe) {
     return (

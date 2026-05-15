@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw, AlertCircle, Settings, X, Coffee, Brain } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -9,67 +9,148 @@ export function FocusTimerView() {
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isActive, setIsActive] = useState(false);
   const [mode, setMode] = useState<'work' | 'break'>('work');
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [alarmType, setAlarmType] = useState<'beep' | 'chime' | 'digital'>('beep');
   
   const [showSettings, setShowSettings] = useState(false);
   const [tempWork, setTempWork] = useState(25);
   const [tempBreak, setTempBreak] = useState(5);
+  const [tempSoundEnabled, setTempSoundEnabled] = useState(true);
+  const [tempAlarmType, setTempAlarmType] = useState<'beep' | 'chime' | 'digital'>('beep');
+
+  const targetTimeRef = useRef<number | null>(null);
+
+  const playAlarmSound = (overrideType?: 'beep' | 'chime' | 'digital') => {
+    if (!soundEnabled && !overrideType) return;
+    const typeToPlay = overrideType || alarmType;
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) return;
+      
+      const ctx = new AudioContext();
+      
+      const playTone = (freq: number, type: OscillatorType, startTime: number, duration: number) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, startTime);
+        
+        gain.gain.setValueAtTime(0, startTime);
+        gain.gain.linearRampToValueAtTime(0.3, startTime + Math.min(0.05, duration/2)); // Fade in
+        gain.gain.linearRampToValueAtTime(0, startTime + duration); // Fade out
+        
+        osc.start(startTime);
+        osc.stop(startTime + duration);
+      };
+
+      const now = ctx.currentTime;
+      
+      if (typeToPlay === 'beep') {
+        playTone(880, 'sine', now, 0.2);
+        playTone(880, 'sine', now + 0.3, 0.2);
+        playTone(880, 'sine', now + 0.6, 0.2);
+      } else if (typeToPlay === 'chime') {
+        playTone(523.25, 'sine', now, 0.4);      
+        playTone(659.25, 'sine', now + 0.15, 0.4); 
+        playTone(783.99, 'sine', now + 0.3, 0.4);  
+        playTone(1046.50, 'sine', now + 0.45, 0.8);
+      } else if (typeToPlay === 'digital') {
+        playTone(1200, 'square', now, 0.1);
+        playTone(1200, 'square', now + 0.15, 0.1);
+        playTone(1200, 'square', now + 0.4, 0.1);
+        playTone(1200, 'square', now + 0.55, 0.1);
+      }
+      
+    } catch (e) {
+      console.error('Failed to play alarm', e);
+    }
+  };
+
+  const handlePreviewSound = (type: 'beep' | 'chime' | 'digital') => {
+    setTempAlarmType(type);
+    playAlarmSound(type);
+  };
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
     
     if (isActive && timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft(time => time - 1);
-      }, 1000);
-    } else if (timeLeft === 0 && isActive) {
-      setIsActive(false);
-      
-      if ('Notification' in window && Notification.permission === 'granted') {
-        const title = mode === 'work' ? 'Focus Session Complete!' : 'Break Over!';
-        const body = mode === 'work' ? 'Time to take a well-deserved break.' : 'Ready to focus again?';
-        
-        try {
-          const notif = new Notification(title, { body });
-          notif.onclick = () => window.focus();
-        } catch (e) {
-          if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistration().then(reg => {
-              if (reg) reg.showNotification(title, { body });
-            });
-          }
-        }
+      if (!targetTimeRef.current) {
+        targetTimeRef.current = Date.now() + timeLeft * 1000;
       }
+
+      interval = setInterval(() => {
+        const now = Date.now();
+        const remaining = Math.round((targetTimeRef.current! - now) / 1000);
+
+        if (remaining <= 0) {
+          setTimeLeft(0);
+          setIsActive(false);
+          targetTimeRef.current = null;
+          playAlarmSound();
+          
+          if ('Notification' in window && Notification.permission === 'granted') {
+            const title = mode === 'work' ? 'Focus Session Complete!' : 'Break Over!';
+            const body = mode === 'work' ? 'Time to take a well-deserved break.' : 'Ready to focus again?';
+            
+            try {
+              const notif = new Notification(title, { body });
+              notif.onclick = () => window.focus();
+            } catch (e) {
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration().then(reg => {
+                  if (reg) reg.showNotification(title, { body });
+                });
+              }
+            }
+          }
+        } else {
+          setTimeLeft(remaining);
+        }
+      }, 500); // Check multiple times per second for accuracy
+    } else if (!isActive) {
+      targetTimeRef.current = null;
     }
 
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isActive, timeLeft, mode]);
+  }, [isActive, mode]); // Only re-run when mode or isActive changes
 
   const toggleTimer = () => setIsActive(!isActive);
 
   const resetTimer = () => {
     setIsActive(false);
+    targetTimeRef.current = null;
     setTimeLeft(mode === 'work' ? workDuration * 60 : breakDuration * 60);
   };
 
   const switchMode = (newMode: 'work' | 'break') => {
     setMode(newMode);
     setIsActive(false);
+    targetTimeRef.current = null;
     setTimeLeft(newMode === 'work' ? workDuration * 60 : breakDuration * 60);
   };
 
   const saveSettings = () => {
     setWorkDuration(tempWork);
     setBreakDuration(tempBreak);
+    setSoundEnabled(tempSoundEnabled);
+    setAlarmType(tempAlarmType);
     setShowSettings(false);
     setIsActive(false);
+    targetTimeRef.current = null;
     setTimeLeft(mode === 'work' ? tempWork * 60 : tempBreak * 60);
   };
 
   const openSettings = () => {
      setTempWork(workDuration);
      setTempBreak(breakDuration);
+     setTempSoundEnabled(soundEnabled);
+     setTempAlarmType(alarmType);
      setShowSettings(true);
   };
 
@@ -226,6 +307,46 @@ export function FocusTimerView() {
                     className="w-full accent-emerald-500 h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer"
                   />
                 </div>
+                
+                <div className="flex items-center justify-between py-2 border-t border-slate-100 mt-6 pt-6">
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-700">Alarm Sound</h3>
+                    <p className="text-xs text-slate-500">Play an alert when timer ends</p>
+                  </div>
+                  <button
+                    onClick={() => setTempSoundEnabled(!tempSoundEnabled)}
+                    className={cn(
+                      "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 shrink-0",
+                      tempSoundEnabled ? 'bg-indigo-600' : 'bg-slate-200'
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                        tempSoundEnabled ? 'translate-x-6' : 'translate-x-1'
+                      )}
+                    />
+                  </button>
+                </div>
+
+                {tempSoundEnabled && (
+                  <div className="flex gap-2 animate-in slide-in-from-top-2 duration-200">
+                    {(['beep', 'chime', 'digital'] as const).map((type) => (
+                      <button
+                        key={type}
+                        onClick={() => handlePreviewSound(type)}
+                        className={cn(
+                          "flex-1 py-2 rounded-lg text-xs font-bold capitalize border transition-all",
+                          tempAlarmType === type 
+                            ? "bg-indigo-50 border-indigo-200 text-indigo-700 shadow-sm" 
+                            : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50"
+                        )}
+                      >
+                        {type}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="pt-2">
