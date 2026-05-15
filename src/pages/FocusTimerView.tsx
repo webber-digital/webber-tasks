@@ -92,7 +92,16 @@ export function FocusTimerView() {
           targetTimeRef.current = null;
           playAlarmSound();
           
-          if ('Notification' in window && Notification.permission === 'granted') {
+          let hasPermission = false;
+          try {
+            if ('Notification' in window) {
+              hasPermission = Notification.permission === 'granted';
+            }
+          } catch (e) {
+            // Ignore cross-origin security errors
+          }
+
+          if (hasPermission) {
             const title = mode === 'work' ? 'Focus Session Complete!' : 'Break Over!';
             const body = mode === 'work' ? 'Time to take a well-deserved break.' : 'Ready to focus again?';
             

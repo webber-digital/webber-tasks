@@ -23,9 +23,17 @@ import { Logo } from '../Logo';
 
 function NotificationButton() {
   const isSupported = typeof window !== 'undefined' && 'Notification' in window;
-  const [permission, setPermission] = useState<NotificationPermission>(
-    isSupported ? window.Notification.permission : 'default'
-  );
+  
+  const getInitialPermission = (): NotificationPermission => {
+    if (!isSupported) return 'default';
+    try {
+      return window.Notification.permission;
+    } catch (e) {
+      return 'default';
+    }
+  };
+
+  const [permission, setPermission] = useState<NotificationPermission>(getInitialPermission());
   const [showMessage, setShowMessage] = useState('');
   
   const handleRequestPermission = () => {
