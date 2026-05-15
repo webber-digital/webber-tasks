@@ -1,61 +1,4 @@
-import { GoogleGenAI, Type, Schema } from '@google/genai';
 import { useStore } from '../store';
-
-let aiInstance: GoogleGenAI | null = null;
-
-function getAi() {
-  if (!aiInstance) {
-    aiInstance = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || 'MISSING_KEY' });
-  }
-  return aiInstance;
-}
-
-// The definition of tools we expose to the AI
-const tools = [
-  {
-    name: 'createTask',
-    description: 'Creates a new task in the user\'s to-do list.',
-    parameters: {
-      type: Type.OBJECT,
-      properties: {
-        title: { type: Type.STRING, description: 'The main title/name of the task' },
-        description: { type: Type.STRING, description: 'Detailed description of the task (optional)' },
-        priority: { type: Type.STRING, enum: ['low', 'medium', 'high'], description: 'Priority level. Default is medium.' },
-        tags: { type: Type.ARRAY, items: { type: Type.STRING }, description: 'Relevant category tags (e.g., ["work", "errand"]).' },
-        folder: { type: Type.STRING, description: 'Folder or project name to group the task in (optional).' },
-        dueDateRaw: { type: Type.STRING, description: 'Due date in ISO format, e.g., 2026-05-14T18:00:00Z. Omit if not specified.' },
-      },
-      required: ['title'],
-    }
-  },
-  {
-    name: 'createEvent',
-    description: 'Adds an event to the user\'s calendar.',
-    parameters: {
-      type: Type.OBJECT,
-      properties: {
-        title: { type: Type.STRING, description: 'Title of the event' },
-        dateRaw: { type: Type.STRING, description: 'Date in ISO format, e.g., 2026-05-15T00:00:00Z.' },
-        time: { type: Type.STRING, description: 'Time of the event, e.g., "14:00".' },
-        location: { type: Type.STRING, description: 'Location of the event (optional)' },
-      },
-      required: ['title', 'dateRaw'],
-    }
-  },
-  {
-    name: 'createNote',
-    description: 'Creates a quick note for the user.',
-    parameters: {
-      type: Type.OBJECT,
-      properties: {
-        title: { type: Type.STRING, description: 'Title or quick summary of the note' },
-        content: { type: Type.STRING, description: 'The main body of the note' },
-        tags: { type: Type.ARRAY, items: { type: Type.STRING }, description: 'Tags to categorize the note.' },
-      },
-      required: ['title', 'content'],
-    }
-  }
-];
 
 const RATE_LIMIT_KEY = 'ai_rate_limit_timestamps';
 const MAX_REQUESTS_PER_MINUTE = 3;
@@ -88,36 +31,33 @@ export async function handleAiCommand(userInput: string, context: any): Promise<
   }
 
   const store = useStore.getState();
-  
-  const systemInstruction = `
-    You are OmniTask AI, a helpful productivity assistant designed to help the user manage their life. 
-    The current date and time is ${new Date().toISOString()}.
-    
-    You have tools to create tasks, events, and notes. Be extremely concise in your answers. 
-    When creating objects, you must call the correct function (tool). 
-    After successfully calling a function, briefly tell the user it was created and mention key details.
-    
-    Here is a brief summary of the user's current data for context:
-    - Tasks: ${context.tasks.length}
-    - Events: ${context.events.length}
-    - Notes: ${context.notes.length}
-    - Current View: ${context.currentView}
-  `;
 
   try {
-    const response = await getAi().models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: userInput,
-      config: {
-        systemInstruction,
-        tools: [{ functionDeclarations: tools }],
-      }
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userInput,
+        context: {
+          tasks: context.tasks.length,
+          events: context.events.length,
+          notes: context.notes.length,
+          currentView: context.currentView
+        }
+      })
     });
 
-    if (response.functionCalls && response.functionCalls.length > 0) {
-      const call = response.functionCalls[0];
-      const args = call.args as Record<string, any>;
-      
+    if (!res.ok) {
+      throw new Error((await res.json()).error || 'Network error');
+    }
+
+    const data = await res.json();
+
+    if (data.type === 'function_call') {
+      const call = data.call;
+      const args = call.args;
+
+      // Execute local state changes
       switch (call.name) {
         case 'createTask':
           store.addTask({
@@ -148,21 +88,26 @@ export async function handleAiCommand(userInput: string, context: any): Promise<
           });
           break;
       }
-      
-      // Let the model finalize its answer using function response
-      const followUp = await getAi().models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: [
-          { role: 'user', parts: [{ text: userInput }] },
-          { role: 'model', parts: [{ functionCall: call }] },
-          { role: 'user', parts: [{ functionResponse: { name: call.name, response: { success: true } } }] }
-        ],
-        config: { systemInstruction }
+
+      // Fetch follow up from server
+      const followUpRes = await fetch('/api/chat/followup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userInput,
+          call: data.call
+        })
       });
-      return followUp.text || "I've taken care of that for you.";
+
+      if (!followUpRes.ok) {
+        return "Task successfully added, but I couldn't generate a confirmation message.";
+      }
+
+      const followUpData = await followUpRes.json();
+      return followUpData.text || "I've taken care of that for you.";
     }
 
-    return response.text || "I'm sorry, I couldn't understand that request.";
+    return data.text || "I'm sorry, I couldn't understand that request.";
     
   } catch (err: any) {
     console.error("AI Service Error:", err);
