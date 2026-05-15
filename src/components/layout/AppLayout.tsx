@@ -13,7 +13,6 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { AiAssistant } from '../AiAssistant';
 import { GlobalModals } from '../GlobalModals';
 
 interface SidebarItemProps {
@@ -182,9 +181,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </main>
 
-      {/* Floating AI Assistant */}
-      <AiAssistant />
-      
       {/* Global Creation Modals */}
       <GlobalModals />
     </div>

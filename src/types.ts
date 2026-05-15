@@ -31,9 +31,3 @@ export interface Note {
   createdAt: Date;
   updatedAt: Date;
 }
-
-export interface Message {
-  id: string;
-  role: 'user' | 'model';
-  content: string;
-}

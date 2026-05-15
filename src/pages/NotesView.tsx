@@ -77,7 +77,7 @@ export function NotesView() {
           {notes.length === 0 && !isAdding ? (
             <div className="col-span-full h-64 flex flex-col items-center justify-center text-slate-400 border-2 border-dashed border-slate-200 rounded-3xl">
               <StickyNote className="h-12 w-12 text-slate-200 mb-3" />
-              <p>No notes yet. Click the button above or tell the AI to create one!</p>
+              <p>No notes yet. Click the button above to create one!</p>
             </div>
           ) : (
             notes.map(note => (

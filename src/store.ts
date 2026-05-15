@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Task, Event, Note, ViewMode, Priority, Message } from './types';
+import { Task, Event, Note, ViewMode, Priority } from './types';
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
@@ -23,10 +23,6 @@ interface AppState {
   addNote: (note: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateNote: (id: string, updates: Partial<Note>) => void;
   deleteNote: (id: string) => void;
-
-  messages: Message[];
-  addMessage: (msg: Omit<Message, 'id'>) => void;
-  clearMessages: () => void;
 
   activeModal: 'task' | 'event' | 'note' | null;
   setActiveModal: (modal: 'task' | 'event' | 'note' | null) => void;
@@ -56,16 +52,6 @@ export const useStore = create<AppState>()(
       addNote: (note) => set((state) => ({ notes: [{ ...note, id: generateId(), createdAt: new Date(), updatedAt: new Date() }, ...state.notes] })),
       updateNote: (id, updates) => set((state) => ({ notes: state.notes.map(n => n.id === id ? { ...n, ...updates, updatedAt: new Date() } : n) })),
       deleteNote: (id) => set((state) => ({ notes: state.notes.filter(n => n.id !== id) })),
-
-      messages: [
-        {
-          id: 'init',
-          role: 'model',
-          content: 'Hi! I am your Webber.Tasks Assistant. I can help you create tasks, events, and notes. Try saying "Remind me to buy milk tomorrow at 5pm".'
-        }
-      ],
-      addMessage: (msg) => set((state) => ({ messages: [...state.messages, { ...msg, id: generateId() }] })),
-      clearMessages: () => set({ messages: [] })
     }),
     {
       name: 'webber-tasks-storage',

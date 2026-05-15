@@ -170,7 +170,7 @@ export function FocusTimerView() {
       <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 flex items-start gap-3 mt-4 mx-4 md:mx-0 shadow-sm">
         <AlertCircle className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
         <p className="text-xs md:text-sm text-indigo-800 leading-relaxed">
-          <strong>Pro Tip:</strong> Use the AI Assistant to log passing thoughts directly into Notes without breaking your flow state.
+          <strong>Pro Tip:</strong> Keep a notepad nearby to log passing thoughts directly without breaking your flow state.
         </p>
       </div>
 
