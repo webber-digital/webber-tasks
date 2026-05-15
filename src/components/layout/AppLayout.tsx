@@ -270,11 +270,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             />
           ))}
         </nav>
-
-        {/* Sidebar Bottom Ad */}
-        <div className="p-4 border-t border-slate-100 shrink-0 relative z-10 w-full overflow-hidden">
-          <AdSenseBlock className="w-full min-h-[250px] bg-slate-50 rounded-xl border border-slate-100" />
-        </div>
       </aside>
 
       {/* Main Content */}
@@ -313,11 +308,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
 
             {/* Bottom Ad Blocks */}
-            <div className="mt-auto pt-8 pb-4 shrink-0 overflow-hidden">
-               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                 <AdSenseBlock className="w-full min-h-[250px] bg-slate-50 rounded-xl border border-slate-200" />
-                 <AdSenseBlock className="w-full min-h-[250px] bg-slate-50 rounded-xl border border-slate-200" />
-                 <AdSenseBlock className="w-full min-h-[250px] bg-slate-50 rounded-xl border border-slate-200" />
+            <div className="mt-auto pt-8 pb-4 shrink-0 flex justify-center">
+               <div className="w-full max-w-md">
+                 <AdSenseBlock className="w-full min-h-[90px] bg-slate-50 rounded-xl border border-slate-200 overflow-hidden" format="auto" />
                </div>
             </div>
           </div>
