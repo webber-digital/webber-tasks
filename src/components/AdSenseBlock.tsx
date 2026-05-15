@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface AdSenseBlockProps {
   className?: string;
@@ -19,13 +19,18 @@ export function AdSenseBlock({
   format = "auto", 
   responsive = true 
 }: AdSenseBlockProps) {
+  const isLoaded = useRef(false);
+
   useEffect(() => {
-    try {
-      if (typeof window !== 'undefined' && window.adsbygoogle) {
-        window.adsbygoogle.push({});
+    if (!isLoaded.current) {
+      isLoaded.current = true;
+      try {
+        if (typeof window !== 'undefined') {
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+        }
+      } catch (e) {
+        console.error('AdSense error', e);
       }
-    } catch (e) {
-      console.error('AdSense error', e);
     }
   }, []);
 

@@ -260,7 +260,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
            {isAddMenuOpen && <AddMenuDropdown className="top-full left-0 mt-2 w-full origin-top" />}
         </div>
 
-        <nav className="flex-1 px-4 space-y-1 py-4 md:py-0">
+        <nav className="flex-1 px-4 space-y-1 py-4 md:py-0 overflow-y-auto relative z-50">
           {navItems.map((item) => (
             <SidebarItem
               key={item.view}
@@ -272,7 +272,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* Sidebar Bottom Ad */}
-        <div className="p-4 border-t border-slate-100">
+        <div className="p-4 border-t border-slate-100 shrink-0 relative z-10 w-full overflow-hidden">
           <AdSenseBlock className="w-full min-h-[250px] bg-slate-50 rounded-xl border border-slate-100" />
         </div>
       </aside>
