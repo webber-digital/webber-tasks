@@ -1,7 +1,14 @@
 import { GoogleGenAI, Type, Schema } from '@google/genai';
 import { useStore } from '../store';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+let aiInstance: GoogleGenAI | null = null;
+
+function getAi() {
+  if (!aiInstance) {
+    aiInstance = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || 'MISSING_KEY' });
+  }
+  return aiInstance;
+}
 
 // The definition of tools we expose to the AI
 const tools = [
@@ -98,7 +105,7 @@ export async function handleAiCommand(userInput: string, context: any): Promise<
   `;
 
   try {
-    const response = await ai.models.generateContent({
+    const response = await getAi().models.generateContent({
       model: 'gemini-2.5-flash',
       contents: userInput,
       config: {
@@ -143,7 +150,7 @@ export async function handleAiCommand(userInput: string, context: any): Promise<
       }
       
       // Let the model finalize its answer using function response
-      const followUp = await ai.models.generateContent({
+      const followUp = await getAi().models.generateContent({
         model: 'gemini-2.5-flash',
         contents: [
           { role: 'user', parts: [{ text: userInput }] },
