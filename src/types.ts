@@ -1,5 +1,5 @@
 export type Priority = 'low' | 'medium' | 'high';
-export type ViewMode = 'dashboard' | 'tasks' | 'calendar' | 'timer' | 'notes';
+export type ViewMode = 'dashboard' | 'tasks' | 'calendar' | 'timer' | 'notes' | 'blogs';
 
 export interface Task {
   id: string;

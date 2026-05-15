@@ -12,12 +12,14 @@ import {
   Plus,
   ChevronDown,
   Bell,
-  BellRing
+  BellRing,
+  BookOpen
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { GlobalModals } from '../GlobalModals';
 import { motion } from 'motion/react';
 import { AdSenseBlock } from '../AdSenseBlock';
+import { Logo } from '../Logo';
 
 function NotificationButton() {
   const isSupported = typeof window !== 'undefined' && 'Notification' in window;
@@ -174,6 +176,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     { icon: CalendarIcon, label: 'Calendar', view: 'calendar' },
     { icon: Clock, label: 'Focus Timer', view: 'timer' },
     { icon: StickyNote, label: 'Notes', view: 'notes' },
+    { icon: BookOpen, label: 'Blogs', view: 'blogs' as ViewMode },
   ];
 
   const handleNavClick = (view: ViewMode) => {
@@ -218,14 +221,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="flex h-screen w-full bg-slate-50 overflow-hidden font-sans text-slate-900">
       {/* Mobile Header */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-50 flex items-center justify-between px-4">
-        <div className="font-bold text-xl text-indigo-600 flex items-center gap-2">
-          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 -ml-2 mr-1">
+        <div className="font-bold text-xl text-indigo-600 flex items-center gap-2 max-w-[200px]">
+          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 -ml-2 mr-1 shrink-0">
             {isMobileMenuOpen ? <X className="h-6 w-6 text-slate-600" /> : <Menu className="h-6 w-6 text-slate-600" />}
           </button>
-          <div className="w-6 h-6 bg-indigo-600 rounded-md flex items-center justify-center shrink-0">
-            <div className="w-3 h-3 bg-white rounded-sm"></div>
-          </div>
-          Webber.Tasks
+          <Logo className="w-8 h-8 shrink-0 drop-shadow-sm" />
+          <span className="truncate">Webber.Tasks</span>
         </div>
         
         <div className="flex items-center gap-2">
@@ -256,9 +257,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         isMobileMenuOpen ? "translate-x-0 pt-16" : "-translate-x-full md:pt-0"
       )}>
         <div className="hidden md:flex items-center gap-3 p-6 shrink-0 border-b border-slate-50">
-          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shrink-0">
-            <div className="w-4 h-4 bg-white rounded-sm"></div>
-          </div>
+          <Logo className="w-10 h-10 shrink-0 drop-shadow-sm" />
           <span className="font-bold text-xl tracking-tight">Webber.Tasks</span>
         </div>
         

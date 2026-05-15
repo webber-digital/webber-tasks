@@ -10,6 +10,7 @@ import { TasksView } from './pages/TasksView';
 import { CalendarView } from './pages/CalendarView';
 import { FocusTimerView } from './pages/FocusTimerView';
 import { NotesView } from './pages/NotesView';
+import { BlogsView } from './pages/BlogsView';
 
 export default function App() {
   const currentView = useStore((state) => state.currentView);
@@ -21,6 +22,7 @@ export default function App() {
       case 'calendar': return <CalendarView />;
       case 'timer': return <FocusTimerView />;
       case 'notes': return <NotesView />;
+      case 'blogs': return <BlogsView />;
       default: return <DashboardView />;
     }
   };
