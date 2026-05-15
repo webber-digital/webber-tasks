@@ -26,6 +26,12 @@ export function AdSenseBlock({
       isLoaded.current = true;
       try {
         if (typeof window !== 'undefined') {
+          // Check if we are in an iframe (AI Studio preview)
+          const isInIframe = window.self !== window.top;
+          if (isInIframe) {
+            console.log('AdSense blocked in preview iframe');
+            return;
+          }
           (window.adsbygoogle = window.adsbygoogle || []).push({});
         }
       } catch (e) {
@@ -33,6 +39,17 @@ export function AdSenseBlock({
       }
     }
   }, []);
+
+  const isInIframe = typeof window !== 'undefined' && window.self !== window.top;
+
+  if (isInIframe) {
+    return (
+      <div className={`overflow-hidden flex flex-col justify-center items-center text-slate-400 text-sm ${className}`}>
+        <span>Ad Placeholder</span>
+        <span className="text-xs opacity-70">(Hidden in Preview)</span>
+      </div>
+    );
+  }
 
   return (
     <div className={`overflow-hidden flex justify-center items-center ${className}`}>

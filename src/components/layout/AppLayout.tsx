@@ -213,7 +213,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen w-full bg-slate-50 overflow-hidden font-sans text-slate-900">
       {/* Mobile Header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-30 flex items-center justify-between px-4">
+      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-50 flex items-center justify-between px-4">
         <div className="font-bold text-xl text-indigo-600 flex items-center gap-2">
           <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 -ml-2 mr-1">
             {isMobileMenuOpen ? <X className="h-6 w-6 text-slate-600" /> : <Menu className="h-6 w-6 text-slate-600" />}
@@ -238,10 +238,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
+      {/* Mobile Sidebar Backdrop */}
+      {isMobileMenuOpen && (
+        <div 
+          className="md:hidden fixed inset-0 z-30 bg-slate-900/20 backdrop-blur-sm"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <aside className={cn(
-        "fixed inset-y-0 left-0 z-20 w-64 bg-white border-r border-slate-200 transform transition-transform duration-200 ease-in-out md:static md:translate-x-0 flex flex-col shrink-0",
-        isMobileMenuOpen ? "translate-x-0 pt-16" : "-translate-x-full"
+        "fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-slate-200 transform transition-transform duration-200 ease-in-out md:static md:translate-x-0 flex flex-col shrink-0",
+        isMobileMenuOpen ? "translate-x-0 pt-16" : "-translate-x-full md:pt-0"
       )}>
         <div className="hidden md:flex items-center gap-3 p-6 shrink-0 border-b border-slate-50">
           <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shrink-0">
@@ -260,7 +268,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
            {isAddMenuOpen && <AddMenuDropdown className="top-full left-0 mt-2 w-full origin-top" />}
         </div>
 
-        <nav className="flex-1 px-4 space-y-1 py-4 md:py-0 overflow-y-auto relative z-50">
+        <nav className="flex-1 px-4 space-y-1 py-4 md:py-0 overflow-y-auto">
           {navItems.map((item) => (
             <SidebarItem
               key={item.view}
