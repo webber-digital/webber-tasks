@@ -36,26 +36,45 @@ function NotificationButton() {
     
     if (permission === 'granted') {
       try {
-        new Notification('Webber.Tasks', {
+        const notif = new Notification('Webber.Tasks', {
           body: 'Notifications are working!',
         });
+        notif.onclick = () => window.focus();
       } catch (e) {
-        setShowMessage("Couldn't show notification. Try opening in a new tab.");
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistration().then((reg) => {
+            if (reg) {
+              reg.showNotification('Webber.Tasks', { body: 'Notifications are working!' });
+            } else {
+              setShowMessage("Please open the app in a new tab to receive notifications.");
+            }
+          });
+        } else {
+          setShowMessage("Couldn't show notification. Try opening in a new tab.");
+        }
       }
       return;
     }
 
-    if (isInIframe) {
-      setShowMessage("Permission blocked in preview. Please open the app in a new tab to enable notifications.");
+    if (isInIframe && permission !== 'granted') {
+      setShowMessage("Please click the 'Open in new tab' button at the top of the AI Studio preview to enable notifications.");
     }
 
     try {
       Notification.requestPermission().then((perm) => {
         setPermission(perm);
         if (perm === 'granted') {
-          new Notification('Notifications Enabled!', {
-            body: 'You will now receive updates here.',
-          });
+          try {
+            new Notification('Notifications Enabled!', {
+              body: 'You will now receive updates here.',
+            });
+          } catch(e) {
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistration().then(reg => {
+                if (reg) reg.showNotification('Notifications Enabled!');
+              });
+            }
+          }
           setShowMessage('');
         } else if (perm === 'denied' && !isInIframe) {
            setShowMessage('Notifications are blocked in your browser settings.');

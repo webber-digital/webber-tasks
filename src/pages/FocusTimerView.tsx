@@ -21,14 +21,30 @@ export function FocusTimerView() {
       interval = setInterval(() => {
         setTimeLeft(time => time - 1);
       }, 1000);
-    } else if (timeLeft === 0) {
+    } else if (timeLeft === 0 && isActive) {
       setIsActive(false);
+      
+      if ('Notification' in window && Notification.permission === 'granted') {
+        const title = mode === 'work' ? 'Focus Session Complete!' : 'Break Over!';
+        const body = mode === 'work' ? 'Time to take a well-deserved break.' : 'Ready to focus again?';
+        
+        try {
+          const notif = new Notification(title, { body });
+          notif.onclick = () => window.focus();
+        } catch (e) {
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistration().then(reg => {
+              if (reg) reg.showNotification(title, { body });
+            });
+          }
+        }
+      }
     }
 
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isActive, timeLeft]);
+  }, [isActive, timeLeft, mode]);
 
   const toggleTimer = () => setIsActive(!isActive);
 
