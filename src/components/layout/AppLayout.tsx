@@ -10,10 +10,69 @@ import {
   Menu,
   X,
   Plus,
-  ChevronDown
+  ChevronDown,
+  Bell,
+  BellRing
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { GlobalModals } from '../GlobalModals';
+import { motion } from 'motion/react';
+
+function NotificationButton() {
+  const isSupported = typeof window !== 'undefined' && 'Notification' in window;
+  const [permission, setPermission] = useState<NotificationPermission>(
+    isSupported ? window.Notification.permission : 'default'
+  );
+  
+  const handleRequestPermission = () => {
+    if (!isSupported) {
+      alert("Notifications are not supported in this browser or preview environment.");
+      return;
+    }
+    
+    if (permission === 'granted') {
+      new Notification('Webber.Tasks', {
+        body: 'Notifications are working!',
+      });
+      return;
+    }
+
+    Notification.requestPermission().then((perm) => {
+      setPermission(perm);
+      if (perm === 'granted') {
+        new Notification('Notifications Enabled!', {
+          body: 'You will now receive updates here.',
+        });
+      }
+    });
+  };
+
+  return (
+    <motion.button
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={handleRequestPermission}
+      className={cn(
+        "relative p-2.5 rounded-full transition-colors flex items-center justify-center",
+        permission === 'granted' ? "text-indigo-600 bg-indigo-50 hover:bg-indigo-100" : "text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+      )}
+      title={isSupported ? (permission === 'granted' ? "Notifications Enabled" : "Enable Notifications") : "Notifications Not Supported"}
+    >
+      {permission === 'granted' ? (
+        <>
+          <BellRing className="h-5 w-5" />
+          <motion.div 
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="absolute top-[6px] right-[6px] w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-indigo-50"
+          />
+        </>
+      ) : (
+        <Bell className="h-5 w-5" />
+      )}
+    </motion.button>
+  );
+}
 
 interface SidebarItemProps {
   icon: React.ElementType;
@@ -106,14 +165,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           Webber.Tasks
         </div>
         
-        <div className="relative" ref={addMenuRef}>
-          <button 
-            onClick={() => setIsAddMenuOpen(!isAddMenuOpen)} 
-            className="p-2 bg-indigo-50 text-indigo-700 rounded-full hover:bg-indigo-100 transition-colors"
-          >
-            <Plus className="h-5 w-5" />
-          </button>
-          {isAddMenuOpen && <AddMenuDropdown className="top-full right-0 mt-2" />}
+        <div className="flex items-center gap-2">
+          <NotificationButton />
+          <div className="relative" ref={addMenuRef}>
+            <button 
+              onClick={() => setIsAddMenuOpen(!isAddMenuOpen)} 
+              className="p-2 bg-indigo-50 text-indigo-700 rounded-full hover:bg-indigo-100 transition-colors"
+            >
+              <Plus className="h-5 w-5" />
+            </button>
+            {isAddMenuOpen && <AddMenuDropdown className="top-full right-0 mt-2" />}
+          </div>
         </div>
       </div>
 
@@ -161,7 +223,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </h2>
             <span className="text-sm text-slate-500 bg-slate-100 px-3 py-1 rounded-full">{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
+            <NotificationButton />
             <div className="flex items-center gap-3 border-l pl-6 border-slate-200">
               <div className="text-right hidden lg:block">
                 <p className="text-sm font-semibold text-slate-900">Guest User</p>
