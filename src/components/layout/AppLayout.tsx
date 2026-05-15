@@ -17,6 +17,7 @@ import {
 import { cn } from '../../lib/utils';
 import { GlobalModals } from '../GlobalModals';
 import { motion } from 'motion/react';
+import { AdSenseBlock } from '../AdSenseBlock';
 
 function NotificationButton() {
   const isSupported = typeof window !== 'undefined' && 'Notification' in window;
@@ -56,7 +57,7 @@ function NotificationButton() {
       return;
     }
 
-    if (isInIframe && permission !== 'granted') {
+    if (isInIframe) {
       setShowMessage("Please click the 'Open in new tab' button at the top of the AI Studio preview to enable notifications.");
     }
 
@@ -268,6 +269,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             />
           ))}
         </nav>
+
+        {/* Sidebar Bottom Ad */}
+        <div className="p-4 border-t border-slate-100">
+          <AdSenseBlock className="w-full min-h-[250px] bg-slate-50 rounded-xl border border-slate-100" />
+        </div>
       </aside>
 
       {/* Main Content */}
@@ -295,8 +301,24 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </header>
 
         <div className="flex-1 overflow-y-auto w-full relative p-4 pt-20 md:pt-6 md:p-6 lg:p-8">
-          <div className="mx-auto max-w-6xl min-h-full flex flex-col w-full">
-            {children}
+          <div className="mx-auto max-w-6xl min-h-full flex flex-col w-full gap-6">
+            {/* Top Ad Block */}
+            <div className="w-full shrink-0">
+              <AdSenseBlock className="w-full min-h-[90px] bg-slate-50 rounded-xl border border-slate-200 overflow-hidden" format="auto" />
+            </div>
+
+            <div className="flex-1">
+              {children}
+            </div>
+
+            {/* Bottom Ad Blocks */}
+            <div className="mt-auto pt-8 pb-4 shrink-0 overflow-hidden">
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                 <AdSenseBlock className="w-full min-h-[250px] bg-slate-50 rounded-xl border border-slate-200" />
+                 <AdSenseBlock className="w-full min-h-[250px] bg-slate-50 rounded-xl border border-slate-200" />
+                 <AdSenseBlock className="w-full min-h-[250px] bg-slate-50 rounded-xl border border-slate-200" />
+               </div>
+            </div>
           </div>
         </div>
       </main>
