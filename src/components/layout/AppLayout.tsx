@@ -58,7 +58,8 @@ function NotificationButton() {
     }
 
     if (isInIframe) {
-      setShowMessage("Please click the 'Open in new tab' button at the top of the AI Studio preview to enable notifications.");
+      setShowMessage("Please click the 'Open in new tab' button at the top right of the preview to enable notifications.");
+      return;
     }
 
     try {
