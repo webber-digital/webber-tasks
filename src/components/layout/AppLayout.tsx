@@ -51,7 +51,7 @@ function NotificationButton() {
     
     if (permission === 'granted') {
       try {
-        const notif = new Notification('Webber.Tasks', {
+        const notif = new Notification('Wavedo', {
           body: 'Notifications are working!',
         });
         notif.onclick = () => window.focus();
@@ -59,7 +59,7 @@ function NotificationButton() {
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.getRegistration().then((reg) => {
             if (reg) {
-              reg.showNotification('Webber.Tasks', { body: 'Notifications are working!' });
+              reg.showNotification('Wavedo', { body: 'Notifications are working!' });
             } else {
               setShowMessage("Please open the app in a new tab to receive notifications.");
             }
@@ -234,7 +234,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             {isMobileMenuOpen ? <X className="h-6 w-6 text-slate-600" /> : <Menu className="h-6 w-6 text-slate-600" />}
           </button>
           <Logo className="w-8 h-8 shrink-0 drop-shadow-sm" />
-          <span className="truncate">Webber.Tasks</span>
+          <span className="truncate">Wavedo</span>
         </div>
         
         <div className="flex items-center gap-2">
@@ -266,7 +266,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       )}>
         <div className="hidden md:flex items-center gap-3 p-6 shrink-0 border-b border-slate-50">
           <Logo className="w-10 h-10 shrink-0 drop-shadow-sm" />
-          <span className="font-bold text-xl tracking-tight">Webber.Tasks</span>
+          <span className="font-bold text-xl tracking-tight">Wavedo</span>
         </div>
         
         <div className="p-4 hidden md:block relative z-40">

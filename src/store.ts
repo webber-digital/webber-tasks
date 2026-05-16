@@ -54,7 +54,7 @@ export const useStore = create<AppState>()(
       deleteNote: (id) => set((state) => ({ notes: state.notes.filter(n => n.id !== id) })),
     }),
     {
-      name: 'webber-tasks-storage',
+      name: 'wavedo-tasks-storage',
       merge: (persistedState: any, currentState) => {
         return {
           ...currentState,

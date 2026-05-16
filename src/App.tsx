@@ -66,7 +66,7 @@ export default function App() {
               transition={{ delay: 0.4, duration: 0.8 }}
               className="mt-8 text-2xl font-bold bg-gradient-to-r from-[#0055ff] via-[#00aaff] to-[#00d2ff] bg-clip-text text-transparent tracking-widest uppercase shadow-sm"
             >
-              Webber
+              Wavedo
             </motion.h1>
           </motion.div>
         )}

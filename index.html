@@ -3,18 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Webber.Tasks - Task Management & Productivity</title>
+    <title>Wavedo - Task Management & Productivity</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
-    <meta name="description" content="Webber.Tasks is the ultimate all-in-one productivity app. Combine powerful task management, an advanced pomodoro focus timer, intelligent calendar syncing, and quick notes to skyrocket your daily efficiency. Best to-do list & planner." />
-    <meta name="keywords" content="Webber.Tasks, Webber Tasks, WebberTasks, task management, productivity app, pomodoro focus timer, calendar app, best to-do list, daily planner, time management, secure notes, high productivity, achieve goals" />
+    <meta name="description" content="Wavedo is the ultimate all-in-one productivity app. Combine powerful task management, an advanced pomodoro focus timer, intelligent calendar syncing, and quick notes to skyrocket your daily efficiency. Best to-do list & planner." />
+    <meta name="keywords" content="Wavedo, Wavedo Tasks, task management, productivity app, pomodoro focus timer, calendar app, best to-do list, daily planner, time management, secure notes, high productivity, achieve goals" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-    <!-- Added a published date or similar might help, but Google might still show the indexing time. We'll add some structured data. -->
+    <meta property="og:site_name" content="Wavedo" />
+    <meta property="og:title" content="Wavedo - Task Management & Productivity" />
+    <meta property="og:description" content="Wavedo is the ultimate all-in-one productivity app. Combine powerful task management, an advanced pomodoro focus timer, intelligent calendar syncing, and quick notes to skyrocket your daily efficiency. Best to-do list & planner." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://wavedo.vercel.app/" />
+    <meta property="og:image" content="https://wavedo.vercel.app/favicon.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    
+    <!-- Structured Data to force Site Name and WebSite type in Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Wavedo",
+      "alternateName": "Wavedo Tasks",
+      "url": "https://wavedo.vercel.app/"
+    }
+    </script>
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
-      "name": "Webber.Tasks",
+      "name": "Wavedo",
       "applicationCategory": "ProductivityApplication",
       "operatingSystem": "Web",
       "offers": {
@@ -22,7 +39,7 @@
         "price": "0",
         "priceCurrency": "USD"
       },
-      "description": "Webber.Tasks is the ultimate all-in-one productivity app. Combine powerful task management, an advanced pomodoro focus timer, intelligent calendar syncing, and quick notes to skyrocket your daily efficiency. Best to-do list & planner."
+      "description": "Wavedo is the ultimate all-in-one productivity app. Combine powerful task management, an advanced pomodoro focus timer, intelligent calendar syncing, and quick notes to skyrocket your daily efficiency. Best to-do list & planner."
     }
     </script>
     <link rel="manifest" href="/manifest.json" />
@@ -46,7 +63,7 @@
   </head>
   <body>
     <div class="sr-only" aria-hidden="true" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">
-      Webber.Tasks is your ultimate productivity powerhouse. Effortlessly manage tasks, stay focused with an advanced pomodoro timer, sync your calendar, and jot down quick notes. Skyrocket your efficiency with the best task manager and daily planner designed for top performers everywhere.
+      Wavedo is your ultimate productivity powerhouse. Effortlessly manage tasks, stay focused with an advanced pomodoro timer, sync your calendar, and jot down quick notes. Skyrocket your efficiency with the best task manager and daily planner designed for top performers everywhere.
     </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://webber-tasks.vercel.app/sitemap.xml
+Sitemap: https://wavedo.vercel.app/sitemap.xml

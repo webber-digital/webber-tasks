@@ -6,32 +6,79 @@ const BLOG_POSTS = [
   {
     id: '1',
     title: 'The Ultimate Guide to Productivity: How to Get More Done in Less Time',
-    excerpt: 'Discover actionable strategies to boost your productivity, manage your time effectively, and achieve your goals with less stress. Learn how Webber.Tasks can be your secret weapon.',
+    excerpt: 'Discover actionable strategies to boost your productivity, manage your time effectively, and achieve your goals with less stress. Learn how Wavedo can be your secret weapon.',
     content: `
       <h2>The Productivity Paradox</h2>
       <p>We all have the same 24 hours in a day, yet some people seem to accomplish so much more. The secret isn't working harder; it's working smarter. True productivity is about maximizing your impact while minimizing wasted effort.</p>
       
       <h2>1. The Power of Time Blocking</h2>
       <p>One of the most effective ways to manage your day is time blocking. Instead of working from a never-ending to-do list, schedule specific blocks of time for specific tasks. This prevents Parkinson's Law (work expands to fill the time available) and keeps you focused.</p>
-      <p>Use the calendar feature in Webber.Tasks to block out deep work sessions, meetings, and even breaks. Treat these blocks as immutable appointments with yourself.</p>
+      <p>Use the calendar feature in Wavedo to block out deep work sessions, meetings, and even breaks. Treat these blocks as immutable appointments with yourself.</p>
 
       <h2>2. Embrace the Pomodoro Technique</h2>
       <p>Focus fatigue is real. The Pomodoro Technique combats this by breaking work into intervals, traditionally 25 minutes in length, separated by short breaks. This trains your brain to focus for short bursts and helps you stay fresh.</p>
-      <p>Webber.Tasks includes a built-in Focus Timer perfectly optimized for Pomodoro sessions. Give it a try, and you'll be amazed at how much you can achieve without burning out.</p>
+      <p>Wavedo includes a built-in Focus Timer perfectly optimized for Pomodoro sessions. Give it a try, and you'll be amazed at how much you can achieve without burning out.</p>
 
       <h2>3. The Two-Minute Rule</h2>
       <p>If a task takes less than two minutes to complete, do it immediately. Don't add it to your list, don't schedule it for later. Just do it. This simple rule prevents small tasks from piling up and overwhelming you.</p>
 
       <h2>4. Prioritize Ruthlessly</h2>
-      <p>Not all tasks are created equal. Identify the 20% of tasks that will yield 80% of your results (the Pareto Principle). Focus your energy on these high-impact tasks. Webber.Tasks allows you to categorize and prioritize tasks so you always know what's most important.</p>
+      <p>Not all tasks are created equal. Identify the 20% of tasks that will yield 80% of your results (the Pareto Principle). Focus your energy on these high-impact tasks. Wavedo allows you to categorize and prioritize tasks so you always know what's most important.</p>
 
       <h2>Conclusion</h2>
-      <p>Productivity is a journey, not a destination. By implementing these strategies and leveraging the right tools like Webber.Tasks, you can take control of your time, reduce stress, and achieve your goals faster than you ever thought possible.</p>
+      <p>Productivity is a journey, not a destination. By implementing these strategies and leveraging the right tools like Wavedo, you can take control of your time, reduce stress, and achieve your goals faster than you ever thought possible.</p>
     `,
     date: '2026-05-15',
-    author: 'Webber Team',
+    author: 'Wavedo Team',
     readTime: '4 min read',
     imageUrl: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: '2',
+    title: 'Why You Need a Second Brain: Master Your Focus and Ideas',
+    excerpt: 'Stop trying to remember everything. Learn how combining task management, a focus timer, and quick notes creates a powerful "Second Brain" to clear your mind and increase creativity.',
+    content: `
+      <h2>Your Brain is for Having Ideas, Not Holding Them</h2>
+      <p>David Allen, the creator of Getting Things Done (GTD), famously said that your mind is for having ideas, not for holding them. When you rely solely on your memory to track tasks, ideas, and appointments, you increase cognitive load and stress levels.</p>
+      
+      <h2>Building Your Second Brain with Wavedo</h2>
+      <p>A "Second Brain" is an external, centralized system where you store your ideas, to-dos, and knowledge. With Wavedo, you have all the tools necessary in one dashboard.</p>
+      
+      <h3>1. Capture Everything Instantly</h3>
+      <p>The moment an idea strikes or a new task is assigned, log it. Wavedo allows you to quickly add tasks with priorities or jot down unstructured thoughts in the Notes section. This frees up your mental RAM for actual problem-solving and deep work.</p>
+
+      <h3>2. Execute with Pomodoro Focus</h3>
+      <p>Once your tasks are captured and organized, it's time to execute. The Pomodoro technique isn't just about managing time; it's about managing your attention span. Our built-in Focus Timer lets you zone in on a single task from your list without distractions.</p>
+
+      <h2>The Result: Flow State</h2>
+      <p>When you trust your external system (Wavedo) to hold your responsibilities, you can fully immerse yourself in the present moment. This immersion is the key to achieving the elusive "Flow State," where your best work happens effortlessly.</p>
+    `,
+    date: '2026-05-20',
+    author: 'Wavedo Team',
+    readTime: '5 min read',
+    imageUrl: 'https://images.unsplash.com/photo-1517842645767-c639042777db?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: '3',
+    title: 'How to Build Morning Routines that Stick',
+    excerpt: 'Win the morning to win the day. A comprehensive look into designing morning routines that actually work for you, using Wavedo.',
+    content: `
+      <h2>The Foundation of a Good Day</h2>
+      <p>Your morning routine sets the tone for the rest of your day. Without structure, you're reacting to the world. With a strong routine, you dictate your own progress.</p>
+      
+      <h2>Start Small</h2>
+      <p>Don't try to implement ten new habits at once. Pick one or two—like drinking a glass of water, followed by a 10-minute focus block on your biggest task using the Wavedo Pomodoro timer.</p>
+      
+      <h2>Sync Your Calendar</h2>
+      <p>Review your day before the day begins. By checking the Wavedo Calendar every morning, you prepare yourself mentally for the meetings and deep work sessions ahead.</p>
+      
+      <h2>The Power of Consistency</h2>
+      <p>Motivation gets you started; habit keeps you going. Track your streaks and watch your productivity compound over time!</p>
+    `,
+    date: '2026-05-22',
+    author: 'Wavedo Team',
+    readTime: '3 min read',
+    imageUrl: 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
   }
 ];
 
@@ -88,7 +135,7 @@ export function BlogsView() {
             <div className="mt-12 pt-8 border-t border-slate-200 pb-8">
               <div className="bg-slate-50 rounded-2xl p-6 md:p-8 text-center flex flex-col items-center">
                 <h3 className="text-xl font-bold text-slate-900 mb-2">Ready to boost your productivity?</h3>
-                <p className="text-slate-600 mb-6">Start using Webber.Tasks today and take control of your time.</p>
+                <p className="text-slate-600 mb-6">Start using Wavedo today and take control of your time.</p>
                 <AdSenseBlock className="w-full max-w-2xl min-h-[90px] bg-slate-100 rounded-xl border border-slate-200 overflow-hidden" format="auto" />
               </div>
             </div>
