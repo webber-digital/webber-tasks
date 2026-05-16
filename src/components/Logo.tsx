@@ -8,35 +8,59 @@ export function Logo({ className = "w-8 h-8" }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      <rect width="100" height="100" rx="22" fill="white" />
+      {/* Background Circle */}
+      <circle cx="50" cy="50" r="48" fill="#040b1c" />
+      <circle cx="50" cy="50" r="50" fill="url(#bgGrad)" opacity="0.3" />
       
-      {/* Left side of W (outline) */}
+      {/* Glow Effect */}
       <path 
-        d="M22 28 L38 80 L56 46 L46 28 Z" 
-        stroke="#CBD5E1" 
-        strokeWidth="2.5"
-        strokeLinejoin="round"
-        fill="white"
-      />
-      
-      {/* Small top caps for the outline */}
-      <path 
-        d="M20 28 L32 28 M43 28 L52 28" 
-        stroke="#CBD5E1" 
-        strokeWidth="2.5"
+        d="M 24 38 L 38 74 L 50 48 L 60 74 L 84 34" 
+        stroke="#00A3FF" 
+        strokeWidth="14"
+        fill="none"
         strokeLinecap="round"
-      />
-      <path d="M26 28 L46 28" stroke="white" strokeWidth="5" />
-
-      {/* Right side checkmark */}
-      <path 
-        d="M49 52 L61 76 L84 28 L71 28 L57 58 L49 52 Z"
-        fill="#FACC15"
-        stroke="#FACC15"
-        strokeWidth="2.5"
         strokeLinejoin="round"
-        className="drop-shadow-sm"
+        opacity="0.25"
+        filter="blur(6px)"
       />
+
+      {/* Main Logo Path (W + Checkmark) */}
+      <path 
+        d="M 24 38 L 38 74 L 50 48 L 60 74 L 84 34" 
+        stroke="url(#blueGrad)" 
+        strokeWidth="10"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round" 
+      />
+
+      {/* Fold details to make it look like continuous ribbon from user's image */}
+      <path 
+        d="M 38 74 L 50 48 L 60 74 L 84 34" 
+        stroke="url(#blueGradLight)" 
+        strokeWidth="4"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round" 
+        opacity="0.8"
+      />
+
+      <defs>
+        <linearGradient id="bgGrad" x1="0" y1="0" x2="100" y2="100">
+          <stop stopColor="#0033aa"/>
+          <stop offset="1" stopColor="#000000" stopOpacity="0"/>
+        </linearGradient>
+        <linearGradient id="blueGrad" x1="20" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#0055ff"/>
+          <stop offset="0.5" stopColor="#00aaff"/>
+          <stop offset="1" stopColor="#00d2ff"/>
+        </linearGradient>
+        <linearGradient id="blueGradLight" x1="20" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#66aaff"/>
+          <stop offset="1" stopColor="#b3e5ff"/>
+        </linearGradient>
+      </defs>
     </svg>
   );
 }
+

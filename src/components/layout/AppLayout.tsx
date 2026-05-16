@@ -317,20 +317,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
         <div className="flex-1 overflow-y-auto w-full relative p-4 pt-20 md:pt-6 md:p-6 lg:p-8">
           <div className="mx-auto max-w-6xl min-h-full flex flex-col w-full gap-6">
-            {/* Top Ad Block */}
-            <div className="w-full shrink-0">
-              <AdSenseBlock className="w-full min-h-[90px] bg-slate-50 rounded-xl border border-slate-200 overflow-hidden" format="auto" />
-            </div>
-
             <div className="flex-1">
               {children}
-            </div>
-
-            {/* Bottom Ad Blocks */}
-            <div className="mt-auto pt-8 pb-4 shrink-0 flex justify-center">
-               <div className="w-full max-w-md">
-                 <AdSenseBlock className="w-full min-h-[90px] bg-slate-50 rounded-xl border border-slate-200 overflow-hidden" format="auto" />
-               </div>
             </div>
           </div>
         </div>

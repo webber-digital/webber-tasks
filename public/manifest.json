@@ -4,8 +4,8 @@
   "description": "Task Management, Focus Timer, and Productivity App",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#4f46e5",
+  "background_color": "#040b1c",
+  "theme_color": "#00aaff",
   "icons": [
     {
       "src": "/favicon.svg",
