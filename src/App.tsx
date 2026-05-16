@@ -57,7 +57,7 @@ export default function App() {
                 delay: 0.1
               }}
             >
-              <Logo className="w-32 h-32 md:w-48 md:h-48 drop-shadow-2xl" />
+              <Logo className="w-32 h-32 md:w-48 md:h-48 drop-shadow-2xl" animated={true} />
             </motion.div>
             
             <motion.h1
