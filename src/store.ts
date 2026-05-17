@@ -4,10 +4,30 @@ import { Task, Event, Note, ViewMode, Priority } from './types';
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
+interface TimerConfig {
+  workDuration: number;
+  breakDuration: number;
+  soundEnabled: boolean;
+  alarmType: 'beep' | 'chime' | 'digital';
+  theme: string;
+}
+
+interface TimerState {
+  isActive: boolean;
+  mode: 'work' | 'break';
+  timeLeft: number;
+  targetTime: number | null;
+}
+
 interface AppState {
   currentView: ViewMode;
   setCurrentView: (view: ViewMode) => void;
   
+  timerConfig: TimerConfig;
+  setTimerConfig: (config: Partial<TimerConfig>) => void;
+  timerState: TimerState;
+  setTimerState: (updates: Partial<TimerState>) => void;
+
   tasks: Task[];
   addTask: (task: Omit<Task, 'id' | 'createdAt'>) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
@@ -34,7 +54,24 @@ export const useStore = create<AppState>()(
       currentView: 'dashboard',
       setCurrentView: (currentView) => set({ currentView }),
 
-      activeModal: null,
+      timerConfig: {
+    workDuration: 25,
+    breakDuration: 5,
+    soundEnabled: true,
+    alarmType: 'beep',
+    theme: 'indigo',
+  },
+  setTimerConfig: (config) => set((state) => ({ timerConfig: { ...state.timerConfig, ...config } })),
+  
+  timerState: {
+    isActive: false,
+    mode: 'work',
+    timeLeft: 25 * 60,
+    targetTime: null,
+  },
+  setTimerState: (updates) => set((state) => ({ timerState: { ...state.timerState, ...updates } })),
+  
+  activeModal: null,
       setActiveModal: (activeModal) => set({ activeModal }),
 
       tasks: [],

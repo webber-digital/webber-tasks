@@ -1,15 +1,14 @@
 import { useStore } from '../store';
 import { cn } from '../lib/utils';
-import { CheckCircle2, Clock, Calendar as CalendarIcon, Circle, GraduationCap } from 'lucide-react';
+import { CheckCircle2, Clock, Circle, GraduationCap } from 'lucide-react';
 import { format, isToday } from 'date-fns';
 import { Link, useNavigate } from 'react-router-dom';
 
 export function DashboardView() {
-  const { tasks, events } = useStore();
+  const { tasks } = useStore();
   const navigate = useNavigate();
 
   const todayTasks = tasks.filter(t => !t.completed && t.dueDate && isToday(t.dueDate));
-  const upcomingEvents = events.filter(e => isToday(e.date) || e.date > new Date()).slice(0, 3);
   const completedToday = tasks.filter(t => t.completed && isToday(t.createdAt)); // simplification
 
   return (
@@ -55,15 +54,6 @@ export function DashboardView() {
           <div>
             <p className="text-sm font-medium text-slate-500">Completed</p>
             <p className="text-2xl font-bold text-slate-900">{completedToday.length}</p>
-          </div>
-        </div>
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div className="h-12 w-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
-            <CalendarIcon className="h-6 w-6" />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-slate-500">Events</p>
-            <p className="text-2xl font-bold text-slate-900">{upcomingEvents.length}</p>
           </div>
         </div>
       </div>
@@ -116,47 +106,6 @@ export function DashboardView() {
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-slate-400">Due Today</p>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* Upcoming Events Widget */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col">
-          <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 rounded-t-2xl">
-            <h3 className="font-bold flex items-center gap-2 text-slate-900">
-              <CalendarIcon className="w-5 h-5 text-indigo-600" />
-              Upcoming Events
-            </h3>
-            <button 
-              onClick={() => navigate('/calendar')}
-              className="text-sm text-indigo-600 font-semibold hover:underline"
-            >
-              Calendar
-            </button>
-          </div>
-          <div className="p-5 flex-1 flex flex-col gap-4">
-            {upcomingEvents.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center text-center py-6">
-                <CalendarIcon className="h-12 w-12 text-slate-200 mb-2" />
-                <p className="text-slate-500">No upcoming events.</p>
-              </div>
-            ) : (
-              upcomingEvents.map(event => (
-                <div key={event.id} className="flex items-start gap-3 p-4 bg-white rounded-2xl border border-slate-100 hover:border-slate-200 transition-colors">
-                  <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg shrink-0 flex flex-col items-center justify-center min-w-[3.5rem]">
-                    <span className="text-xs font-bold text-indigo-500 uppercase">{format(event.date, 'MMM')}</span>
-                    <span className="text-lg font-bold text-slate-800 leading-none">{format(event.date, 'd')}</span>
-                  </div>
-                  <div className="pl-2 border-l-2 border-transparent">
-                    <p className="text-xs text-slate-500 uppercase font-bold tracking-wider">Upcoming Event</p>
-                    <p className="text-sm font-bold text-slate-800 mt-0.5">{event.title}</p>
-                    <p className="text-[11px] text-slate-500 mt-1 flex gap-2 items-center">
-                       {event.location && <span>{event.location}</span>}
-                    </p>
-                    <p className="text-xs font-semibold text-indigo-600 mt-2">{event.time || "All Day"}</p>
                   </div>
                 </div>
               ))

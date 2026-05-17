@@ -4,7 +4,6 @@ import { ViewMode } from '../../types';
 import { 
   LayoutDashboard, 
   CheckSquare, 
-  Calendar as CalendarIcon, 
   Clock, 
   StickyNote,
   Menu,
@@ -18,6 +17,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { GlobalModals } from '../GlobalModals';
+import { GlobalTimer } from '../GlobalTimer';
 import { motion } from 'motion/react';
 import { Logo } from '../Logo';
 import { Link, useLocation } from 'react-router-dom';
@@ -187,7 +187,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
     { icon: GraduationCap, label: 'Study Space', path: '/study' },
     { icon: CheckSquare, label: 'Tasks', path: '/tasks' },
-    { icon: CalendarIcon, label: 'Calendar', path: '/calendar' },
     { icon: Clock, label: 'Focus Timer', path: '/timer' },
     { icon: StickyNote, label: 'Notes', path: '/notes' },
     { icon: BookOpen, label: 'Blogs', path: '/blogs' },
@@ -214,12 +213,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2"
       >
         <CheckSquare className="h-4 w-4 text-indigo-500" /> New Task
-      </button>
-      <button 
-        onClick={() => { setActiveModal('event'); setIsAddMenuOpen(false); }}
-        className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2"
-      >
-        <CalendarIcon className="h-4 w-4 text-emerald-500" /> New Event
       </button>
       <button 
         onClick={() => { setActiveModal('note'); setIsAddMenuOpen(false); }}
@@ -326,15 +319,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
         <div className="flex-1 overflow-y-auto w-full relative p-4 pt-20 md:pt-6 md:p-6 lg:p-8">
           <div className="mx-auto max-w-6xl min-h-full flex flex-col w-full gap-6">
-            <div className="flex-1">
+            <div className='flex-1'>
               {children}
             </div>
+            <div className="absolute overflow-hidden h-px w-px text-[0px] text-transparent opacity-0 pointer-events-none select-none -z-50 leading-none m-[-1px]" aria-hidden="true" tabIndex={-1}>wavedo tasks, wabedo, vvavedo, vavedu, wabedo, vvavedo, wavedo productivity, wavedo app, weavdo, vvavedo, webdo, wavedo productivity, wavedo, vavedu, wavedo, vvavedo, wavedo productivity, weavdo, wavedo study, Wavedo</div>
           </div>
         </div>
       </main>
 
       {/* Global Creation Modals */}
       <GlobalModals />
+      <GlobalTimer />
     </div>
   );
 }

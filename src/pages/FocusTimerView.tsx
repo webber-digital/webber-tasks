@@ -1,24 +1,25 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Play, Pause, RotateCcw, AlertCircle, Settings, X, Coffee, Brain } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useStore } from '../store';
 
 export function FocusTimerView() {
-  const [workDuration, setWorkDuration] = useState(25);
-  const [breakDuration, setBreakDuration] = useState(5);
-  
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
-  const [isActive, setIsActive] = useState(false);
-  const [mode, setMode] = useState<'work' | 'break'>('work');
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [alarmType, setAlarmType] = useState<'beep' | 'chime' | 'digital'>('beep');
+  const { timerState, timerConfig, setTimerState, setTimerConfig } = useStore();
   
   const [showSettings, setShowSettings] = useState(false);
-  const [tempWork, setTempWork] = useState(25);
-  const [tempBreak, setTempBreak] = useState(5);
-  const [tempSoundEnabled, setTempSoundEnabled] = useState(true);
-  const [tempAlarmType, setTempAlarmType] = useState<'beep' | 'chime' | 'digital'>('beep');
+  const [tempWork, setTempWork] = useState(timerConfig.workDuration);
+  const [tempBreak, setTempBreak] = useState(timerConfig.breakDuration);
+  const [tempSoundEnabled, setTempSoundEnabled] = useState(timerConfig.soundEnabled);
+  const [tempAlarmType, setTempAlarmType] = useState(timerConfig.alarmType);
+  const [tempTheme, setTempTheme] = useState(timerConfig.theme);
 
-  const targetTimeRef = useRef<number | null>(null);
+  const THEMES = [
+    { id: 'indigo', name: 'Indigo Dream', bg: 'bg-slate-900', border: 'border-slate-800', glow: 'shadow-indigo-900/40', ambient: 'bg-indigo-500', text: 'text-white', btnBg: 'bg-indigo-500', btnHover: 'hover:bg-indigo-600', ring: 'ring-indigo-500', accent: 'text-indigo-500' },
+    { id: 'rose', name: 'Rose Petal', bg: 'bg-rose-950', border: 'border-rose-900', glow: 'shadow-rose-900/40', ambient: 'bg-rose-500', text: 'text-white', btnBg: 'bg-rose-600', btnHover: 'hover:bg-rose-700', ring: 'ring-rose-500', accent: 'text-rose-500' },
+    { id: 'amber', name: 'Golden Hour', bg: 'bg-amber-950', border: 'border-amber-900', glow: 'shadow-amber-900/40', ambient: 'bg-amber-500', text: 'text-amber-50', btnBg: 'bg-amber-500', btnHover: 'hover:bg-amber-600', ring: 'ring-amber-500', accent: 'text-amber-500' },
+    { id: 'emerald', name: 'Forest Focus', bg: 'bg-slate-900', border: 'border-slate-800', glow: 'shadow-emerald-900/40', ambient: 'bg-emerald-500', text: 'text-white', btnBg: 'bg-emerald-500', btnHover: 'hover:bg-emerald-600', ring: 'ring-emerald-500', accent: 'text-emerald-500' },
+    { id: 'sky', name: 'Deep Sky', bg: 'bg-sky-950', border: 'border-sky-900', glow: 'shadow-sky-900/40', ambient: 'bg-sky-500', text: 'text-white', btnBg: 'bg-sky-500', btnHover: 'hover:bg-sky-600', ring: 'ring-sky-500', accent: 'text-sky-500' },
+  ];
 
   const playAlarmSound = (overrideType?: 'beep' | 'chime' | 'digital') => {
     if (!soundEnabled && !overrideType) return;
@@ -74,100 +75,57 @@ export function FocusTimerView() {
     playAlarmSound(type);
   };
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-    
-    if (isActive && timeLeft > 0) {
-      if (!targetTimeRef.current) {
-        targetTimeRef.current = Date.now() + timeLeft * 1000;
-      }
-
-      interval = setInterval(() => {
-        const now = Date.now();
-        const remaining = Math.round((targetTimeRef.current! - now) / 1000);
-
-        if (remaining <= 0) {
-          setTimeLeft(0);
-          setIsActive(false);
-          targetTimeRef.current = null;
-          playAlarmSound();
-          
-          let hasPermission = false;
-          try {
-            if ('Notification' in window) {
-              hasPermission = Notification.permission === 'granted';
-            }
-          } catch (e) {
-            // Ignore cross-origin security errors
-          }
-
-          if (hasPermission) {
-            const title = mode === 'work' ? 'Focus Session Complete!' : 'Break Over!';
-            const body = mode === 'work' ? 'Time to take a well-deserved break.' : 'Ready to focus again?';
-            
-            try {
-              const notif = new Notification(title, { body });
-              notif.onclick = () => window.focus();
-            } catch (e) {
-              if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistration().then(reg => {
-                  if (reg) reg.showNotification(title, { body });
-                });
-              }
-            }
-          }
-        } else {
-          setTimeLeft(remaining);
-        }
-      }, 500); // Check multiple times per second for accuracy
-    } else if (!isActive) {
-      targetTimeRef.current = null;
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isActive, mode]); // Only re-run when mode or isActive changes
-
-  const toggleTimer = () => setIsActive(!isActive);
+  const toggleTimer = () => setTimerState({ isActive: !timerState.isActive });
 
   const resetTimer = () => {
-    setIsActive(false);
-    targetTimeRef.current = null;
-    setTimeLeft(mode === 'work' ? workDuration * 60 : breakDuration * 60);
+    setTimerState({
+      isActive: false,
+      targetTime: null,
+      timeLeft: timerState.mode === 'work' ? timerConfig.workDuration * 60 : timerConfig.breakDuration * 60
+    });
   };
 
   const switchMode = (newMode: 'work' | 'break') => {
-    setMode(newMode);
-    setIsActive(false);
-    targetTimeRef.current = null;
-    setTimeLeft(newMode === 'work' ? workDuration * 60 : breakDuration * 60);
+    setTimerState({
+      mode: newMode,
+      isActive: false,
+      targetTime: null,
+      timeLeft: newMode === 'work' ? timerConfig.workDuration * 60 : timerConfig.breakDuration * 60
+    });
   };
 
   const saveSettings = () => {
-    setWorkDuration(tempWork);
-    setBreakDuration(tempBreak);
-    setSoundEnabled(tempSoundEnabled);
-    setAlarmType(tempAlarmType);
+    setTimerConfig({
+      workDuration: tempWork,
+      breakDuration: tempBreak,
+      soundEnabled: tempSoundEnabled,
+      alarmType: tempAlarmType,
+      theme: tempTheme
+    });
     setShowSettings(false);
-    setIsActive(false);
-    targetTimeRef.current = null;
-    setTimeLeft(mode === 'work' ? tempWork * 60 : tempBreak * 60);
+    setTimerState({
+      isActive: false,
+      targetTime: null,
+      timeLeft: timerState.mode === 'work' ? tempWork * 60 : tempBreak * 60
+    });
   };
 
   const openSettings = () => {
-     setTempWork(workDuration);
-     setTempBreak(breakDuration);
-     setTempSoundEnabled(soundEnabled);
-     setTempAlarmType(alarmType);
+     setTempWork(timerConfig.workDuration);
+     setTempBreak(timerConfig.breakDuration);
+     setTempSoundEnabled(timerConfig.soundEnabled);
+     setTempAlarmType(timerConfig.alarmType);
+     setTempTheme(timerConfig.theme);
      setShowSettings(true);
   };
 
-  const minutes = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
+  const minutes = Math.floor(timerState.timeLeft / 60);
+  const seconds = timerState.timeLeft % 60;
   
-  const currentTotalTime = mode === 'work' ? workDuration * 60 : breakDuration * 60;
-  const percentage = currentTotalTime > 0 ? (timeLeft / currentTotalTime) * 100 : 0;
+  const currentTotalTime = timerState.mode === 'work' ? timerConfig.workDuration * 60 : timerConfig.breakDuration * 60;
+  const percentage = currentTotalTime > 0 ? (timerState.timeLeft / currentTotalTime) * 100 : 0;
+  
+  const activeTheme = THEMES.find(t => t.id === timerConfig.theme) || THEMES[0];
 
   return (
     <div className="flex flex-col flex-1 space-y-4 md:space-y-6 animate-in fade-in duration-500 max-w-xl mx-auto w-full pt-4 md:pt-16 pb-24 md:pb-0 relative">
@@ -178,16 +136,16 @@ export function FocusTimerView() {
 
       <div className={cn(
         "p-8 md:p-12 rounded-[2rem] border shadow-2xl flex flex-col items-center relative overflow-hidden transition-all duration-700 mx-4 md:mx-0",
-        mode === 'work' 
-          ? "bg-slate-900 border-slate-800 shadow-indigo-900/40 text-white" 
+        timerState.mode === 'work' 
+          ? cn(activeTheme.bg, activeTheme.border, activeTheme.glow, activeTheme.text) 
           : "bg-emerald-50 border-emerald-100 shadow-emerald-500/20 text-emerald-950"
       )}>
         
         {/* Decorative ambient background */}
-        {mode === 'work' && (
-          <div className="absolute -top-32 -right-32 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+        {timerState.mode === 'work' && (
+          <div className={cn("absolute -top-32 -right-32 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse", activeTheme.ambient)}></div>
         )}
-        {mode === 'break' && (
+        {timerState.mode === 'break' && (
           <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-emerald-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
         )}
 
@@ -195,7 +153,7 @@ export function FocusTimerView() {
           onClick={openSettings}
           className={cn(
             "absolute top-6 right-6 p-2 rounded-full transition-colors z-20",
-            mode === 'work' ? "text-slate-400 hover:text-white hover:bg-white/10" : "text-emerald-600 hover:bg-emerald-200/50"
+            timerState.mode === 'work' ? "text-slate-400 hover:text-white hover:bg-white/10" : "text-emerald-600 hover:bg-emerald-200/50"
           )}
         >
           <Settings className="h-5 w-5" />
@@ -204,13 +162,13 @@ export function FocusTimerView() {
         {/* Mode Selector */}
         <div className={cn(
           "flex p-1.5 rounded-2xl z-10 mb-12",
-          mode === 'work' ? "bg-slate-800/60 backdrop-blur-md" : "bg-emerald-200/50"
+          timerState.mode === 'work' ? "bg-slate-800/60 backdrop-blur-md" : "bg-emerald-200/50"
         )}>
           <button 
             onClick={() => switchMode('work')}
             className={cn(
               "px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm flex items-center gap-2",
-              mode === 'work' ? "bg-indigo-500 text-white" : "text-emerald-700/60 shadow-none hover:text-emerald-800"
+              timerState.mode === 'work' ? cn(activeTheme.btnBg, activeTheme.text) : "text-emerald-700/60 shadow-none hover:text-emerald-800"
             )}
           >
             <Brain className="h-4 w-4" /> Focus
@@ -219,7 +177,7 @@ export function FocusTimerView() {
             onClick={() => switchMode('break')}
             className={cn(
               "px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm flex items-center gap-2",
-              mode === 'break' ? "bg-emerald-500 text-white" : "text-slate-400 shadow-none hover:text-slate-300"
+              timerState.mode === 'break' ? "bg-emerald-500 text-white" : "text-slate-400 shadow-none hover:text-slate-300"
             )}
           >
             <Coffee className="h-4 w-4" /> Break
@@ -230,7 +188,7 @@ export function FocusTimerView() {
         <div className="relative flex flex-col items-center justify-center w-full z-10 my-8">
            <span className={cn(
              "text-6xl md:text-[8rem] font-black tracking-tighter leading-none font-mono",
-             mode === 'work' ? "text-white" : "text-emerald-950"
+             timerState.mode === 'work' ? activeTheme.text : "text-emerald-950"
            )}>
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </span>
@@ -238,7 +196,7 @@ export function FocusTimerView() {
                 <div 
                   className={cn(
                     "h-full rounded-full transition-all duration-1000 ease-linear",
-                    mode === 'work' ? "bg-indigo-500" : "bg-emerald-500"
+                    timerState.mode === 'work' ? activeTheme.ambient : "bg-emerald-500"
                   )}
                   style={{ width: `${percentage}%` }}
                 />
@@ -251,7 +209,7 @@ export function FocusTimerView() {
             onClick={resetTimer}
             className={cn(
               "p-4 rounded-full transition-colors flex items-center justify-center backdrop-blur-md",
-              mode === 'work' ? "bg-slate-800/60 text-slate-300 hover:bg-slate-700" : "bg-emerald-100/70 text-emerald-700 hover:bg-emerald-200"
+              timerState.mode === 'work' ? "bg-slate-800/60 text-slate-300 hover:bg-slate-700" : "bg-emerald-100/70 text-emerald-700 hover:bg-emerald-200"
             )}
           >
             <RotateCcw className="h-6 w-6" />
@@ -260,11 +218,11 @@ export function FocusTimerView() {
             onClick={toggleTimer}
             className={cn(
               "w-24 h-24 rounded-full flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-xl",
-              mode === 'work' ? "bg-indigo-500 text-white shadow-indigo-500/30" : "bg-emerald-500 text-white shadow-emerald-500/30",
-              isActive && "scale-95 shadow-inner"
+              timerState.mode === 'work' ? cn(activeTheme.btnBg, activeTheme.text, "shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)]") : "bg-emerald-500 text-white shadow-emerald-500/30",
+              timerState.isActive && "scale-95 shadow-inner"
             )}
           >
-            {isActive ? (
+            {timerState.isActive ? (
               <Pause className="h-10 w-10 fill-current" />
             ) : (
               <Play className="h-10 w-10 fill-current ml-2" />
@@ -356,6 +314,29 @@ export function FocusTimerView() {
                     ))}
                   </div>
                 )}
+                
+                <div className="py-2 border-t border-slate-100 mt-6 pt-6">
+                  <div className="mb-3">
+                    <h3 className="text-sm font-bold text-slate-700">Timer Theme</h3>
+                    <p className="text-xs text-slate-500">Pick a color scheme for Focus mode</p>
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    {THEMES.map((theme) => (
+                      <button
+                        key={theme.id}
+                        onClick={() => setTempTheme(theme.id)}
+                        className={cn(
+                          "w-8 h-8 rounded-full border-2 transition-all flex items-center justify-center",
+                          tempTheme === theme.id ? "border-indigo-600 scale-110" : "border-transparent opacity-70 hover:opacity-100 hover:scale-105",
+                          theme.ambient
+                        )}
+                        title={theme.name}
+                      >
+                        {tempTheme === theme.id && <div className="w-2 h-2 bg-white rounded-full" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               <div className="pt-2">
