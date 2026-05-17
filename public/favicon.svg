@@ -1,27 +1,15 @@
 <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Glowing W transparent icon -->
-  <!-- Glow Effect -->
-  <path d="M 32 50 L 46 84 L 60 56 L 74 84 L 88 46" stroke="#00A3FF" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.3" filter="blur(5px)" />
+  <!-- Solid Background to ensure good icon rendering everywhere (like white circles in Android) -->
+  <rect width="120" height="120" rx="24" fill="#040b1c" />
 
   <!-- Main Logo Path -->
-  <path d="M 32 50 L 46 84 L 60 56 L 74 84 L 88 46" stroke="url(#blueGrad)" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-
-  <!-- Fold details -->
-  <path d="M 32 50 L 46 84 L 60 56 L 74 84 L 88 46" stroke="url(#blueGradLight)" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.8" />
+  <path d="M 32 50 L 46 84 L 60 56 L 74 84 L 88 46" stroke="url(#blueGrad)" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round" />
 
   <defs>
-    <linearGradient id="bgGrad" x1="0" y1="0" x2="120" y2="120">
-      <stop stopColor="#0033aa"/>
-      <stop offset="1" stopColor="#000000" stopOpacity="0"/>
-    </linearGradient>
     <linearGradient id="blueGrad" x1="30" y1="30" x2="100" y2="90" gradientUnits="userSpaceOnUse">
       <stop stopColor="#0055ff"/>
       <stop offset="0.5" stopColor="#00aaff"/>
       <stop offset="1" stopColor="#00d2ff"/>
-    </linearGradient>
-    <linearGradient id="blueGradLight" x1="30" y1="30" x2="100" y2="90" gradientUnits="userSpaceOnUse">
-      <stop stopColor="#66aaff"/>
-      <stop offset="1" stopColor="#b3e5ff"/>
     </linearGradient>
   </defs>
 </svg>
