@@ -1,12 +1,47 @@
+const CACHE_NAME = 'wavedo-v1';
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/favicon.svg'
+];
+
+self.addEventListener('install', function(event) {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(function(cache) {
+        return cache.addAll(urlsToCache);
+      })
+  );
+});
+
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    caches.match(event.request)
+      .then(function(response) {
+        if (response) {
+          return response;
+        }
+        return fetch(event.request).catch(() => {
+           // Fallback for failed network
+           if (event.request.mode === 'navigate') {
+             return caches.match('/');
+           }
+        });
+      }
+    )
+  );
+});
+
 self.addEventListener('push', function(event) {
   const options = {
-    body: event.data ? event.data.text() : 'Webber.Tasks Notification',
-    icon: '/icon.png',
-    badge: '/icon.png'
+    body: event.data ? event.data.text() : 'Wavedo Notification',
+    icon: '/favicon.svg',
+    badge: '/favicon.svg'
   };
 
   event.waitUntil(
-    self.registration.showNotification('Webber.Tasks Update', options)
+    self.registration.showNotification('Wavedo Updates', options)
   );
 });
 
