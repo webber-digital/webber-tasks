@@ -1,10 +1,12 @@
 import { useStore } from '../store';
 import { cn } from '../lib/utils';
-import { CheckCircle2, Clock, Calendar as CalendarIcon, ArrowRight, Circle } from 'lucide-react';
+import { CheckCircle2, Clock, Calendar as CalendarIcon, Circle, GraduationCap } from 'lucide-react';
 import { format, isToday } from 'date-fns';
+import { Link, useNavigate } from 'react-router-dom';
 
 export function DashboardView() {
-  const { tasks, events, setCurrentView } = useStore();
+  const { tasks, events } = useStore();
+  const navigate = useNavigate();
 
   const todayTasks = tasks.filter(t => !t.completed && t.dueDate && isToday(t.dueDate));
   const upcomingEvents = events.filter(e => isToday(e.date) || e.date > new Date()).slice(0, 3);
@@ -15,6 +17,24 @@ export function DashboardView() {
       <div>
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 md:hidden">Morning Dashboard</h1>
         <p className="text-slate-500 mt-1 md:hidden">Here is the overview of your day.</p>
+      </div>
+
+      {/* Study Space Prompt */}
+      <div className="bg-indigo-600 rounded-2xl p-6 md:p-8 text-white shadow-xl shadow-indigo-200/50 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
+        <div className="absolute -right-10 -top-10 opacity-10">
+          <GraduationCap className="w-48 h-48" />
+        </div>
+        <div className="relative z-10 text-center md:text-left">
+          <h2 className="text-2xl md:text-3xl font-bold mb-2">Enhance Your Knowledge</h2>
+          <p className="text-indigo-100 max-w-lg mb-0 text-sm md:text-base">
+            Take a quick math quiz to sharpen your mind. 75 dynamic questions. 100% Ad-Free. Available in English & Hindi.
+          </p>
+        </div>
+        <div className="relative z-10 shrink-0 w-full md:w-auto">
+          <Link to="/study" className="bg-white text-indigo-600 hover:bg-slate-50 font-bold py-3 px-6 rounded-xl shadow-sm transition-colors block text-center">
+            Go to Study Space →
+          </Link>
+        </div>
       </div>
 
       {/* Quick Stats */}
@@ -57,7 +77,7 @@ export function DashboardView() {
               Active Tasks
             </h3>
             <button 
-              onClick={() => setCurrentView('tasks')}
+              onClick={() => navigate('/tasks')}
               className="text-sm text-indigo-600 font-semibold hover:underline"
             >
               + New Task
@@ -111,7 +131,7 @@ export function DashboardView() {
               Upcoming Events
             </h3>
             <button 
-              onClick={() => setCurrentView('calendar')}
+              onClick={() => navigate('/calendar')}
               className="text-sm text-indigo-600 font-semibold hover:underline"
             >
               Calendar

@@ -13,13 +13,14 @@ import {
   ChevronDown,
   Bell,
   BellRing,
-  BookOpen
+  BookOpen,
+  GraduationCap
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { GlobalModals } from '../GlobalModals';
 import { motion } from 'motion/react';
-import { AdSenseBlock } from '../AdSenseBlock';
 import { Logo } from '../Logo';
+import { Link, useLocation } from 'react-router-dom';
 
 function NotificationButton() {
   const isSupported = typeof window !== 'undefined' && 'Notification' in window;
@@ -150,14 +151,15 @@ function NotificationButton() {
 interface SidebarItemProps {
   icon: React.ElementType;
   label: string;
-  view: ViewMode;
+  path: string;
   isActive: boolean;
   onClick: () => void;
 }
 
-function SidebarItem({ icon: Icon, label, view, isActive, onClick }: SidebarItemProps) {
+function SidebarItem({ icon: Icon, label, path, isActive, onClick }: SidebarItemProps) {
   return (
-    <button
+    <Link
+      to={path}
       onClick={onClick}
       className={cn(
         "flex w-full items-center gap-3 rounded-lg px-3 py-2 transition-colors",
@@ -168,27 +170,30 @@ function SidebarItem({ icon: Icon, label, view, isActive, onClick }: SidebarItem
     >
       <Icon className={cn("h-5 w-5", isActive ? "text-indigo-700" : "text-slate-400")} />
       <span>{label}</span>
-    </button>
+    </Link>
   );
 }
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
-  const { currentView, setCurrentView, setActiveModal } = useStore();
+  const { setActiveModal } = useStore();
+  const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
   const addMenuRef = useRef<HTMLDivElement>(null);
 
-  const navItems: { icon: React.ElementType; label: string; view: ViewMode }[] = [
-    { icon: LayoutDashboard, label: 'Dashboard', view: 'dashboard' },
-    { icon: CheckSquare, label: 'Tasks', view: 'tasks' },
-    { icon: CalendarIcon, label: 'Calendar', view: 'calendar' },
-    { icon: Clock, label: 'Focus Timer', view: 'timer' },
-    { icon: StickyNote, label: 'Notes', view: 'notes' },
-    { icon: BookOpen, label: 'Blogs', view: 'blogs' as ViewMode },
+  const currentPath = location.pathname;
+
+  const navItems = [
+    { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
+    { icon: GraduationCap, label: 'Study Space', path: '/study' },
+    { icon: CheckSquare, label: 'Tasks', path: '/tasks' },
+    { icon: CalendarIcon, label: 'Calendar', path: '/calendar' },
+    { icon: Clock, label: 'Focus Timer', path: '/timer' },
+    { icon: StickyNote, label: 'Notes', path: '/notes' },
+    { icon: BookOpen, label: 'Blogs', path: '/blogs' },
   ];
 
-  const handleNavClick = (view: ViewMode) => {
-    setCurrentView(view);
+  const handleNavClick = () => {
     setIsMobileMenuOpen(false);
   };
 
@@ -280,14 +285,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         <nav className="flex-1 px-4 space-y-1 py-4 md:py-0 overflow-y-auto">
-          {navItems.map((item) => (
-            <SidebarItem
-              key={item.view}
-              {...item}
-              isActive={currentView === item.view}
-              onClick={() => handleNavClick(item.view)}
-            />
-          ))}
+          {navItems.map((item) => {
+            // Active if the current path starts with this item's path
+            const isActive = currentPath.startsWith(item.path);
+            return (
+              <SidebarItem
+                key={item.path}
+                {...item}
+                isActive={isActive}
+                onClick={handleNavClick}
+              />
+            );
+          })}
         </nav>
       </aside>
 
@@ -297,7 +306,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <header className="hidden md:flex h-16 bg-white border-b border-slate-200 px-8 items-center justify-between shrink-0">
           <div className="flex flex-1 items-center gap-4">
             <h2 className="text-xl font-bold text-slate-800 capitalize">
-              {currentView === 'dashboard' ? 'Morning Dashboard' : currentView}
+              {currentPath.split('/')[1] || 'Dashboard'}
             </h2>
             <span className="text-sm text-slate-500 bg-slate-100 px-3 py-1 rounded-full">{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
           </div>

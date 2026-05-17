@@ -6,35 +6,23 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AppLayout } from './components/layout/AppLayout';
-import { useStore } from './store';
 import { DashboardView } from './pages/DashboardView';
 import { TasksView } from './pages/TasksView';
 import { CalendarView } from './pages/CalendarView';
 import { FocusTimerView } from './pages/FocusTimerView';
 import { NotesView } from './pages/NotesView';
-import { BlogsView } from './pages/BlogsView';
+import { BlogsView, BlogPostView } from './pages/BlogsView';
+import { StudyView } from './pages/StudyView';
 import { Logo } from './components/Logo';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 export default function App() {
-  const currentView = useStore((state) => state.currentView);
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 2000);
     return () => clearTimeout(timer);
   }, []);
-
-  const renderView = () => {
-    switch (currentView) {
-      case 'dashboard': return <DashboardView />;
-      case 'tasks': return <TasksView />;
-      case 'calendar': return <CalendarView />;
-      case 'timer': return <FocusTimerView />;
-      case 'notes': return <NotesView />;
-      case 'blogs': return <BlogsView />;
-      default: return <DashboardView />;
-    }
-  };
 
   return (
     <>
@@ -57,7 +45,7 @@ export default function App() {
                 delay: 0.1
               }}
             >
-              <Logo className="w-32 h-32 md:w-48 md:h-48 drop-shadow-2xl" animated={true} />
+              <Logo className="w-32 h-32 md:w-48 h-48 drop-shadow-2xl" animated={true} />
             </motion.div>
             
             <motion.h1
@@ -72,7 +60,18 @@ export default function App() {
         )}
       </AnimatePresence>
       <AppLayout>
-        {renderView()}
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<DashboardView />} />
+          <Route path="/tasks" element={<TasksView />} />
+          <Route path="/calendar" element={<CalendarView />} />
+          <Route path="/timer" element={<FocusTimerView />} />
+          <Route path="/notes" element={<NotesView />} />
+          <Route path="/blogs" element={<BlogsView />} />
+          <Route path="/blogs/:slug" element={<BlogPostView />} />
+          <Route path="/study" element={<StudyView />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
       </AppLayout>
     </>
   );

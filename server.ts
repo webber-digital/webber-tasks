@@ -10,6 +10,9 @@ const PORT = 3000;
 
 app.use(express.json());
 
+// Expose static files from public explicitly first in dev/prod
+app.use(express.static(path.join(process.cwd(), "public")));
+
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BookOpen, Calendar, ArrowLeft, ChevronRight } from 'lucide-react';
-import { AdSenseBlock } from '../components/AdSenseBlock';
+import { Link, useParams, Navigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
-const BLOG_POSTS = [
+export const BLOG_POSTS = [
   {
     id: '1',
+    slug: 'the-ultimate-guide-to-productivity',
     title: 'The Ultimate Guide to Productivity: How to Get More Done in Less Time',
     excerpt: 'Discover actionable strategies to boost your productivity, manage your time effectively, and achieve your goals with less stress. Learn how Wavedo can be your secret weapon.',
     content: `
@@ -35,6 +37,7 @@ const BLOG_POSTS = [
   },
   {
     id: '2',
+    slug: 'build-second-brain',
     title: 'Why You Need a Second Brain: Master Your Focus and Ideas',
     excerpt: 'Stop trying to remember everything. Learn how combining task management, a focus timer, and quick notes creates a powerful "Second Brain" to clear your mind and increase creativity.',
     content: `
@@ -60,6 +63,7 @@ const BLOG_POSTS = [
   },
   {
     id: '3',
+    slug: 'build-morning-routines',
     title: 'How to Build Morning Routines that Stick',
     excerpt: 'Win the morning to win the day. A comprehensive look into designing morning routines that actually work for you, using Wavedo.',
     content: `
@@ -82,95 +86,137 @@ const BLOG_POSTS = [
   }
 ];
 
-export function BlogsView() {
-  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+export function BlogPostView() {
+  const { slug } = useParams<{ slug: string }>();
+  const selectedPost = BLOG_POSTS.find(post => post.slug === slug);
 
-  const selectedPost = BLOG_POSTS.find(post => post.id === selectedPostId);
+  if (!selectedPost) {
+    return <Navigate to="/blogs" replace />;
+  }
 
-  if (selectedPost) {
-    return (
-      <div className="flex-1 flex flex-col min-w-0 bg-white">
-        <header className="flex items-center px-6 py-4 border-b border-slate-200">
-          <button 
-            onClick={() => setSelectedPostId(null)}
-            className="p-2 -ml-2 mr-4 rounded-full hover:bg-slate-100 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 text-slate-600" />
-          </button>
-          <h1 className="text-xl font-bold text-slate-900 truncate">Back to Blogs</h1>
-        </header>
-        
-        <div className="flex-1 overflow-y-auto">
-          <div className="max-w-3xl mx-auto px-6 py-8 md:py-12">
-            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-6 leading-tight">
-              {selectedPost.title}
-            </h1>
-            
-            <div className="flex items-center text-sm text-slate-500 mb-8 space-x-4">
-              <span className="flex items-center">
-                <Calendar className="w-4 h-4 mr-1" />
-                {new Date(selectedPost.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-              </span>
-              <span>•</span>
-              <span>{selectedPost.readTime}</span>
-              <span>•</span>
-              <span>By {selectedPost.author}</span>
-            </div>
-            
-            {selectedPost.imageUrl && (
-              <img 
-                src={selectedPost.imageUrl} 
-                alt={selectedPost.title} 
-                className="w-full h-64 md:h-96 object-cover rounded-2xl mb-10 shadow-sm"
-              />
-            )}
-            
-            <div 
-              className="prose prose-slate prose-lg md:prose-xl max-w-none 
-                         prose-headings:font-bold prose-headings:text-slate-900
-                         prose-p:text-slate-700 prose-p:leading-relaxed prose-a:text-indigo-600 hover:prose-a:text-indigo-500"
-              dangerouslySetInnerHTML={{ __html: selectedPost.content }}
+  // Generate Article Schema JSON-LD
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": selectedPost.title,
+    "image": selectedPost.imageUrl ? [selectedPost.imageUrl] : [],
+    "datePublished": new Date(selectedPost.date).toISOString(),
+    "dateModified": new Date(selectedPost.date).toISOString(),
+    "author": [{
+      "@type": "Organization",
+      "name": selectedPost.author,
+      "url": "https://wavedo.vercel.app/"
+    }],
+    "publisher": {
+      "@type": "Organization",
+      "name": "Wavedo",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://wavedo.vercel.app/favicon.svg"
+      }
+    },
+    "description": selectedPost.excerpt
+  };
+
+  return (
+    <div className="flex-1 flex flex-col min-w-0 bg-white">
+      <Helmet>
+        <title>{selectedPost.title} | Wavedo Blog</title>
+        <meta name="description" content={selectedPost.excerpt} />
+        <meta property="og:title" content={`${selectedPost.title} | Wavedo`} />
+        <meta property="og:description" content={selectedPost.excerpt} />
+        <meta property="og:type" content="article" />
+        <script type="application/ld+json">
+          {JSON.stringify(articleSchema)}
+        </script>
+      </Helmet>
+      
+      <header className="flex items-center px-6 py-4 border-b border-slate-200">
+        <Link 
+          to="/blogs"
+          className="p-2 -ml-2 mr-4 rounded-full hover:bg-slate-100 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5 text-slate-600" />
+        </Link>
+        <h1 className="text-xl font-bold text-slate-900 truncate">Back to Blogs</h1>
+      </header>
+      
+      <div className="flex-1 overflow-y-auto w-full max-w-[100vw] overflow-x-hidden">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 md:py-12 w-full">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-6 leading-tight break-words">
+            {selectedPost.title}
+          </h1>
+          
+          <div className="flex flex-wrap items-center text-sm text-slate-500 mb-8 gap-x-4 gap-y-2">
+            <span className="flex items-center">
+              <Calendar className="w-4 h-4 mr-1" />
+              {new Date(selectedPost.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            </span>
+            <span className="hidden sm:inline">•</span>
+            <span>{selectedPost.readTime}</span>
+            <span className="hidden sm:inline">•</span>
+            <span>By {selectedPost.author}</span>
+          </div>
+          
+          {selectedPost.imageUrl && (
+            <img 
+              src={selectedPost.imageUrl} 
+              alt={selectedPost.title} 
+              className="w-full h-48 sm:h-64 md:h-96 object-cover rounded-2xl mb-10 shadow-sm"
             />
-            
-            <div className="mt-12 pt-8 border-t border-slate-200 pb-8">
-              <div className="bg-slate-50 rounded-2xl p-6 md:p-8 text-center flex flex-col items-center">
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Ready to boost your productivity?</h3>
-                <p className="text-slate-600 mb-6">Start using Wavedo today and take control of your time.</p>
-                <AdSenseBlock className="w-full max-w-2xl min-h-[90px] bg-slate-100 rounded-xl border border-slate-200 overflow-hidden" format="auto" />
-              </div>
+          )}
+          
+          <div 
+            className="prose prose-slate prose-lg md:prose-xl max-w-none 
+                       prose-headings:font-bold prose-headings:text-slate-900 break-words w-full
+                       prose-p:text-slate-700 prose-p:leading-relaxed prose-a:text-indigo-600 hover:prose-a:text-indigo-500
+                       prose-img:rounded-xl prose-img:w-full"
+            dangerouslySetInnerHTML={{ __html: selectedPost.content }}
+          />
+          
+          <div className="mt-12 pt-8 border-t border-slate-200 pb-8">
+            <div className="bg-slate-50 rounded-2xl p-4 sm:p-6 md:p-8 text-center flex flex-col items-center">
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Ready to boost your productivity?</h3>
+              <p className="text-slate-600 mb-6">Start using Wavedo today and take control of your time.</p>
             </div>
           </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
+export function BlogsView() {
   return (
-    <div className="flex-1 flex flex-col min-w-0 bg-slate-50">
-      <header className="px-6 py-8 bg-white border-b border-slate-200">
+    <div className="flex-1 flex flex-col min-w-0 bg-slate-50 w-full overflow-hidden">
+      <Helmet>
+        <title>Productivity Blogs | Wavedo</title>
+        <meta name="description" content="Discover actionable strategies to boost your productivity, manage your time effectively, and achieve your goals with less stress." />
+      </Helmet>
+      <header className="px-4 sm:px-6 py-6 sm:py-8 bg-white border-b border-slate-200">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
-              <BookOpen className="w-6 h-6" />
+            <div className="p-2 sm:p-3 bg-indigo-100 text-indigo-600 rounded-xl shrink-0">
+              <BookOpen className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Blogs</h1>
-              <p className="text-slate-500 mt-1">Insights, tips, and guides for maximum productivity</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Blogs</h1>
+              <p className="text-sm sm:text-base text-slate-500 mt-1">Insights, tips, and guides for maximum productivity</p>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto w-full p-4 sm:p-6">
         <div className="max-w-4xl mx-auto space-y-6">
           {BLOG_POSTS.map(post => (
-            <div 
+            <Link 
               key={post.id} 
-              onClick={() => setSelectedPostId(post.id)}
-              className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col md:flex-row group"
+              to={`/blogs/${post.slug}`}
+              className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col md:flex-row group w-full"
             >
               {post.imageUrl && (
-                <div className="md:w-1/3 h-48 md:h-auto shrink-0 overflow-hidden">
+                <div className="w-full md:w-1/3 h-48 md:h-auto shrink-0 overflow-hidden">
                   <img 
                     src={post.imageUrl} 
                     alt={post.title} 
@@ -178,33 +224,29 @@ export function BlogsView() {
                   />
                 </div>
               )}
-              <div className="p-6 md:p-8 flex-1 flex flex-col">
-                <div className="flex items-center text-xs font-medium text-slate-500 mb-3 space-x-3">
+              <div className="p-5 sm:p-6 md:p-8 flex-1 flex flex-col min-w-0">
+                <div className="flex flex-wrap items-center text-xs font-medium text-slate-500 mb-3 gap-x-3 gap-y-2">
                   <span className="flex items-center text-indigo-600 bg-indigo-50 px-2 py-1 rounded">
                     Productivity
                   </span>
                   <span>{new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                  <span>{post.readTime}</span>
+                  <span className="hidden sm:inline">{post.readTime}</span>
                 </div>
                 
-                <h2 className="text-xl md:text-2xl font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 mb-2 sm:mb-3 group-hover:text-indigo-600 transition-colors truncate sm:whitespace-normal">
                   {post.title}
                 </h2>
                 
-                <p className="text-slate-600 mb-6 line-clamp-2 md:line-clamp-3">
+                <p className="text-sm sm:text-base text-slate-600 mb-4 sm:mb-6 line-clamp-2 md:line-clamp-3">
                   {post.excerpt}
                 </p>
                 
-                <div className="mt-auto flex items-center text-indigo-600 font-semibold group-hover:translate-x-1 transition-transform">
-                  Read article <ChevronRight className="w-5 h-5 ml-1" />
+                <div className="mt-auto flex items-center text-sm sm:text-base text-indigo-600 font-semibold group-hover:translate-x-1 transition-transform">
+                  Read article <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 ml-1" />
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
-
-          <div className="mt-12 flex justify-center">
-             <AdSenseBlock className="w-full max-w-3xl min-h-[90px] bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden" format="auto" />
-          </div>
         </div>
       </div>
     </div>
