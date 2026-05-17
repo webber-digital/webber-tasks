@@ -81,3 +81,11 @@ self.addEventListener('notificationclick', function(event) {
     })
   );
 });
+
+self.addEventListener('sync', function(event) {
+  if (event.tag === 'sync-wavedo') {
+    event.waitUntil(
+      Promise.resolve() // Add background sync logic when an API exists
+    );
+  }
+});
