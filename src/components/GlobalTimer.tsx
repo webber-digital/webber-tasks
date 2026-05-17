@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useStore } from '../store';
 
 export function GlobalTimer() {
-  const { timerState, timerConfig, setTimerState } = useStore();
+  const { timerState, timerConfig, setTimerState, studyState, setStudyState } = useStore();
   const { isActive, targetTime, timeLeft, mode } = timerState;
   const { soundEnabled, alarmType } = timerConfig;
 
@@ -50,14 +50,16 @@ export function GlobalTimer() {
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
     
-    if (isActive && timeLeft > 0) {
-      const currentTarget = targetTime || (Date.now() + timeLeft * 1000);
-      if (!targetTime) {
-        setTimerState({ targetTime: currentTarget });
-      }
+    interval = setInterval(() => {
+      const now = Date.now();
+      
+      // 1. Focus Timer Logic
+      if (isActive && timeLeft > 0) {
+        const currentTarget = targetTime || (now + timeLeft * 1000);
+        if (!targetTime) {
+          setTimerState({ targetTime: currentTarget });
+        }
 
-      interval = setInterval(() => {
-        const now = Date.now();
         const remaining = Math.round((currentTarget - now) / 1000);
 
         if (remaining <= 0) {
@@ -90,15 +92,35 @@ export function GlobalTimer() {
         } else {
           setTimerState({ timeLeft: remaining });
         }
-      }, 500);
-    } else if (!isActive && targetTime) {
-      setTimerState({ targetTime: null });
-    }
+      } else if (!isActive && targetTime) {
+        setTimerState({ targetTime: null });
+      }
+
+      // 2. Study Timer Logic
+      const { isTimerActive, targetEndTime, isComplete, timeRemaining } = studyState || {};
+      if (isTimerActive && targetEndTime && !isComplete) {
+        const studyRemaining = Math.max(0, Math.round((targetEndTime - now) / 1000));
+        
+        if (studyRemaining <= 0 && timeRemaining !== 0) {
+          // Time is up
+          setStudyState({ timeRemaining: 0, isComplete: true, isTimerActive: false });
+          // Optional: we could play a softer alarm for study complete?
+          if (soundEnabled) {
+             playAlarmSound('chime');
+           }
+        } else if (studyRemaining > 0 && studyRemaining !== timeRemaining) {
+          setStudyState({ timeRemaining: studyRemaining });
+        }
+      } else if (timeRemaining === 0 && isTimerActive) {
+         setStudyState({ isComplete: true, isTimerActive: false });
+      }
+
+    }, 500);
 
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isActive, mode, timeLeft, targetTime, soundEnabled, alarmType, setTimerState]);
+  }, [isActive, mode, timeLeft, targetTime, soundEnabled, alarmType, setTimerState, studyState, setStudyState]);
 
-  return null; // This component doesn't render anything
+  return null;
 }

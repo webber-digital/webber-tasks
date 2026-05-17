@@ -13,14 +13,7 @@ export function Logo({ className = "w-8 h-8", animated = false }: { className?: 
         xmlns="http://www.w3.org/2000/svg"
         className={className}
       >
-        {/* Background Circle */}
-        <circle cx="50" cy="50" r="48" fill="#040b1c" />
-        <motion.circle 
-          cx="50" cy="50" r="50" fill="url(#bgGrad)" 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.3 }}
-          transition={{ duration: 1, delay: 0.5 }}
-        />
+        {/* Removed Background Circle for transparent web logo */}
         
         {/* Glow Effect */}
         <motion.path 
@@ -88,9 +81,7 @@ export function Logo({ className = "w-8 h-8", animated = false }: { className?: 
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      {/* Background Circle */}
-      <circle cx="50" cy="50" r="48" fill="#040b1c" />
-      <circle cx="50" cy="50" r="50" fill="url(#bgGrad)" opacity="0.3" />
+      {/* Removed Background Circle for transparent web logo */}
       
       {/* Glow Effect */}
       <path 

@@ -19,9 +19,29 @@ interface TimerState {
   targetTime: number | null;
 }
 
+interface StudyState {
+  language: 'en' | 'hi';
+  questions: any[];
+  currentIndex: number;
+  selectedAnswer: number | null;
+  score: number;
+  streak: number;
+  maxStreak: number;
+  answeredCount: number;
+  isComplete: boolean;
+  timeRemaining: number | null;
+  initialTimeLimit: number | null;
+  isTimerActive: boolean;
+  targetEndTime: number | null;
+}
+
 interface AppState {
   currentView: ViewMode;
   setCurrentView: (view: ViewMode) => void;
+
+  studyState: StudyState;
+  setStudyState: (updates: Partial<StudyState>) => void;
+  resetStudyState: (questions: any[], timeLimit: number | null) => void;
   
   timerConfig: TimerConfig;
   setTimerConfig: (config: Partial<TimerConfig>) => void;
@@ -53,6 +73,40 @@ export const useStore = create<AppState>()(
     (set) => ({
       currentView: 'dashboard',
       setCurrentView: (currentView) => set({ currentView }),
+
+      studyState: {
+        language: 'en',
+        questions: [],
+        currentIndex: 0,
+        selectedAnswer: null,
+        score: 0,
+        streak: 0,
+        maxStreak: 0,
+        answeredCount: 0,
+        isComplete: false,
+        timeRemaining: null,
+        initialTimeLimit: null,
+        isTimerActive: false,
+        targetEndTime: null,
+      },
+      setStudyState: (updates) => set((state) => ({ studyState: { ...state.studyState, ...updates } })),
+      resetStudyState: (questions, timeLimit) => set((state) => ({ 
+        studyState: {
+          ...state.studyState,
+          questions,
+          currentIndex: 0,
+          selectedAnswer: null,
+          score: 0,
+          streak: 0,
+          maxStreak: 0,
+          answeredCount: 0,
+          isComplete: false,
+          timeRemaining: timeLimit,
+          initialTimeLimit: timeLimit,
+          isTimerActive: timeLimit !== null,
+          targetEndTime: timeLimit !== null ? Date.now() + timeLimit * 1000 : null,
+        }
+      })),
 
       timerConfig: {
     workDuration: 25,
@@ -96,6 +150,8 @@ export const useStore = create<AppState>()(
         return {
           ...currentState,
           ...persistedState,
+          studyState: persistedState.studyState || currentState.studyState,
+          timerConfig: { ...currentState.timerConfig, ...persistedState.timerConfig },
           tasks: persistedState.tasks?.map((t: any) => ({
             ...t,
             createdAt: new Date(t.createdAt),

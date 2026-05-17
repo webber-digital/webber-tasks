@@ -14,16 +14,36 @@ export function FocusTimerView() {
   const [tempTheme, setTempTheme] = useState(timerConfig.theme);
 
   const THEMES = [
-    { id: 'indigo', name: 'Indigo Dream', bg: 'bg-slate-900', border: 'border-slate-800', glow: 'shadow-indigo-900/40', ambient: 'bg-indigo-500', text: 'text-white', btnBg: 'bg-indigo-500', btnHover: 'hover:bg-indigo-600', ring: 'ring-indigo-500', accent: 'text-indigo-500' },
-    { id: 'rose', name: 'Rose Petal', bg: 'bg-rose-950', border: 'border-rose-900', glow: 'shadow-rose-900/40', ambient: 'bg-rose-500', text: 'text-white', btnBg: 'bg-rose-600', btnHover: 'hover:bg-rose-700', ring: 'ring-rose-500', accent: 'text-rose-500' },
-    { id: 'amber', name: 'Golden Hour', bg: 'bg-amber-950', border: 'border-amber-900', glow: 'shadow-amber-900/40', ambient: 'bg-amber-500', text: 'text-amber-50', btnBg: 'bg-amber-500', btnHover: 'hover:bg-amber-600', ring: 'ring-amber-500', accent: 'text-amber-500' },
-    { id: 'emerald', name: 'Forest Focus', bg: 'bg-slate-900', border: 'border-slate-800', glow: 'shadow-emerald-900/40', ambient: 'bg-emerald-500', text: 'text-white', btnBg: 'bg-emerald-500', btnHover: 'hover:bg-emerald-600', ring: 'ring-emerald-500', accent: 'text-emerald-500' },
-    { id: 'sky', name: 'Deep Sky', bg: 'bg-sky-950', border: 'border-sky-900', glow: 'shadow-sky-900/40', ambient: 'bg-sky-500', text: 'text-white', btnBg: 'bg-sky-500', btnHover: 'hover:bg-sky-600', ring: 'ring-sky-500', accent: 'text-sky-500' },
+    { 
+      id: 'indigo', name: 'Indigo Dream', 
+      bg: 'bg-slate-900', border: 'border-slate-800', glow: 'shadow-indigo-900/40', ambient: 'bg-indigo-500', text: 'text-white', btnBg: 'bg-indigo-500', btnHover: 'hover:bg-indigo-600', ring: 'ring-indigo-500', accent: 'text-indigo-500',
+      breakBg: 'bg-indigo-50', breakBorder: 'border-indigo-100', breakGlow: 'shadow-indigo-500/20', breakText: 'text-indigo-950', breakBtnBg: 'bg-indigo-500', breakBtnHover: 'hover:bg-indigo-600', breakTabBg: 'bg-indigo-200/50', breakTabInactiveText: 'text-indigo-700/60 hover:text-indigo-800'
+    },
+    { 
+      id: 'rose', name: 'Rose Petal', 
+      bg: 'bg-rose-950', border: 'border-rose-900', glow: 'shadow-rose-900/40', ambient: 'bg-rose-500', text: 'text-white', btnBg: 'bg-rose-600', btnHover: 'hover:bg-rose-700', ring: 'ring-rose-500', accent: 'text-rose-500',
+      breakBg: 'bg-rose-50', breakBorder: 'border-rose-100', breakGlow: 'shadow-rose-500/20', breakText: 'text-rose-950', breakBtnBg: 'bg-rose-500', breakBtnHover: 'hover:bg-rose-600', breakTabBg: 'bg-rose-200/50', breakTabInactiveText: 'text-rose-700/60 hover:text-rose-800'
+    },
+    { 
+      id: 'amber', name: 'Golden Hour', 
+      bg: 'bg-amber-950', border: 'border-amber-900', glow: 'shadow-amber-900/40', ambient: 'bg-amber-500', text: 'text-amber-50', btnBg: 'bg-amber-500', btnHover: 'hover:bg-amber-600', ring: 'ring-amber-500', accent: 'text-amber-500',
+      breakBg: 'bg-amber-50', breakBorder: 'border-amber-100', breakGlow: 'shadow-amber-500/20', breakText: 'text-amber-950', breakBtnBg: 'bg-amber-500', breakBtnHover: 'hover:bg-amber-600', breakTabBg: 'bg-amber-200/50', breakTabInactiveText: 'text-amber-700/60 hover:text-amber-800'
+    },
+    { 
+      id: 'emerald', name: 'Forest Focus', 
+      bg: 'bg-slate-900', border: 'border-slate-800', glow: 'shadow-emerald-900/40', ambient: 'bg-emerald-500', text: 'text-white', btnBg: 'bg-emerald-500', btnHover: 'hover:bg-emerald-600', ring: 'ring-emerald-500', accent: 'text-emerald-500',
+      breakBg: 'bg-emerald-50', breakBorder: 'border-emerald-100', breakGlow: 'shadow-emerald-500/20', breakText: 'text-emerald-950', breakBtnBg: 'bg-emerald-500', breakBtnHover: 'hover:bg-emerald-600', breakTabBg: 'bg-emerald-200/50', breakTabInactiveText: 'text-emerald-700/60 hover:text-emerald-800'
+    },
+    { 
+      id: 'sky', name: 'Deep Sky', 
+      bg: 'bg-sky-950', border: 'border-sky-900', glow: 'shadow-sky-900/40', ambient: 'bg-sky-500', text: 'text-white', btnBg: 'bg-sky-500', btnHover: 'hover:bg-sky-600', ring: 'ring-sky-500', accent: 'text-sky-500',
+      breakBg: 'bg-sky-50', breakBorder: 'border-sky-100', breakGlow: 'shadow-sky-500/20', breakText: 'text-sky-950', breakBtnBg: 'bg-sky-500', breakBtnHover: 'hover:bg-sky-600', breakTabBg: 'bg-sky-200/50', breakTabInactiveText: 'text-sky-700/60 hover:text-sky-800'
+    },
   ];
 
   const playAlarmSound = (overrideType?: 'beep' | 'chime' | 'digital') => {
-    if (!soundEnabled && !overrideType) return;
-    const typeToPlay = overrideType || alarmType;
+    if (!timerConfig.soundEnabled && !overrideType) return;
+    const typeToPlay = overrideType || timerConfig.alarmType;
     try {
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
       if (!AudioContext) return;
@@ -138,7 +158,7 @@ export function FocusTimerView() {
         "p-8 md:p-12 rounded-[2rem] border shadow-2xl flex flex-col items-center relative overflow-hidden transition-all duration-700 mx-4 md:mx-0",
         timerState.mode === 'work' 
           ? cn(activeTheme.bg, activeTheme.border, activeTheme.glow, activeTheme.text) 
-          : "bg-emerald-50 border-emerald-100 shadow-emerald-500/20 text-emerald-950"
+          : cn(activeTheme.breakBg, activeTheme.breakBorder, activeTheme.breakGlow, activeTheme.breakText)
       )}>
         
         {/* Decorative ambient background */}
@@ -146,14 +166,14 @@ export function FocusTimerView() {
           <div className={cn("absolute -top-32 -right-32 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse", activeTheme.ambient)}></div>
         )}
         {timerState.mode === 'break' && (
-          <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-emerald-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
+          <div className={cn("absolute -bottom-32 -left-32 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse", activeTheme.ambient)}></div>
         )}
 
         <button 
           onClick={openSettings}
           className={cn(
             "absolute top-6 right-6 p-2 rounded-full transition-colors z-20",
-            timerState.mode === 'work' ? "text-slate-400 hover:text-white hover:bg-white/10" : "text-emerald-600 hover:bg-emerald-200/50"
+            timerState.mode === 'work' ? "text-slate-400 hover:text-white hover:bg-white/10" : cn(activeTheme.accent, "hover:opacity-80")
           )}
         >
           <Settings className="h-5 w-5" />
@@ -162,13 +182,13 @@ export function FocusTimerView() {
         {/* Mode Selector */}
         <div className={cn(
           "flex p-1.5 rounded-2xl z-10 mb-12",
-          timerState.mode === 'work' ? "bg-slate-800/60 backdrop-blur-md" : "bg-emerald-200/50"
+          timerState.mode === 'work' ? "bg-slate-800/60 backdrop-blur-md" : activeTheme.breakTabBg
         )}>
           <button 
             onClick={() => switchMode('work')}
             className={cn(
               "px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm flex items-center gap-2",
-              timerState.mode === 'work' ? cn(activeTheme.btnBg, activeTheme.text) : "text-emerald-700/60 shadow-none hover:text-emerald-800"
+              timerState.mode === 'work' ? cn(activeTheme.btnBg, activeTheme.text) : cn("shadow-none", activeTheme.breakTabInactiveText)
             )}
           >
             <Brain className="h-4 w-4" /> Focus
@@ -177,7 +197,7 @@ export function FocusTimerView() {
             onClick={() => switchMode('break')}
             className={cn(
               "px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm flex items-center gap-2",
-              timerState.mode === 'break' ? "bg-emerald-500 text-white" : "text-slate-400 shadow-none hover:text-slate-300"
+              timerState.mode === 'break' ? cn(activeTheme.breakBtnBg, "text-white") : "text-slate-400 shadow-none hover:text-slate-300"
             )}
           >
             <Coffee className="h-4 w-4" /> Break
@@ -188,7 +208,7 @@ export function FocusTimerView() {
         <div className="relative flex flex-col items-center justify-center w-full z-10 my-8">
            <span className={cn(
              "text-6xl md:text-[8rem] font-black tracking-tighter leading-none font-mono",
-             timerState.mode === 'work' ? activeTheme.text : "text-emerald-950"
+             timerState.mode === 'work' ? activeTheme.text : activeTheme.breakText
            )}>
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </span>
@@ -196,7 +216,7 @@ export function FocusTimerView() {
                 <div 
                   className={cn(
                     "h-full rounded-full transition-all duration-1000 ease-linear",
-                    timerState.mode === 'work' ? activeTheme.ambient : "bg-emerald-500"
+                    timerState.mode === 'work' ? activeTheme.ambient : activeTheme.breakBtnBg
                   )}
                   style={{ width: `${percentage}%` }}
                 />

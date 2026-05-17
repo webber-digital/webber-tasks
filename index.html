@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Wavedo - Task Management & Productivity</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icon-maskable.svg" />
     <meta name="description" content="Study completely free and ad-free! Master math with our dynamic English and Hindi medium quizzes. Best free online study platform, and a super powerful productivity task manager app." />
     <meta name="keywords" content="free study, free online study app, study space, productive math quiz, hindi medium study, english medium math, student brain boost, online exam preparation, Wavedo, Wavedo Tasks, task management, pomodoro, best productivity app, to-do list, wvedo, vvavedo, weavdo, wabedo, vavedu, stydy" />
     <meta name="robots" content="index, follow" />
@@ -44,6 +44,19 @@
       },
       "description": "Wavedo is the ultimate all-in-one productivity app. Combine powerful task management, an advanced pomodoro focus timer, intelligent calendar syncing, and quick notes to skyrocket your daily efficiency. Best to-do list & planner."
     }
+    </script>
+    <!-- GitHub Pages SPA Redirect Handling -->
+    <script type="text/javascript">
+      (function(l) {
+        if (l.search[1] === '/' ) {
+          var decoded = l.search.slice(1).split('&').map(function(s) { 
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+              l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location));
     </script>
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#040b1c" />
