@@ -51,6 +51,11 @@ export function GlobalTimer() {
     let interval: NodeJS.Timeout | null = null;
     
     interval = setInterval(() => {
+      const state = useStore.getState();
+      const { timerState, timerConfig, setTimerState, studyState, setStudyState } = state;
+      const { isActive, targetTime, timeLeft, mode } = timerState;
+      const { soundEnabled, alarmType } = timerConfig;
+      
       const now = Date.now();
       
       // 1. Focus Timer Logic
@@ -120,7 +125,7 @@ export function GlobalTimer() {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isActive, mode, timeLeft, targetTime, soundEnabled, alarmType, setTimerState, studyState, setStudyState]);
+  }, []);
 
   return null;
 }
